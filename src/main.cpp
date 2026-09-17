@@ -1,18 +1,16 @@
 #include <Arduino.h>
 
-// put function declarations here:
-int myFunction(int, int);
-
-void setup() {
-  // put your setup code here, to run once:
-  int result = myFunction(2, 3);
+void setup() 
+{
+  // Initialise le port de communication et attend pour l'ouvrir:
+  Serial.begin(9600);
+  // Ce délai permet de s'assurer que le moniteur serie (Serial Monitor) soit disponible
+  delay(1500);
 }
 
-void loop() {
-  // put your main code here, to run repeatedly:
-}
+void loop() 
+{
+  Serial.println("Bonjour le monde!");
 
-// put function definitions here:
-int myFunction(int x, int y) {
-  return x + y;
+  delay(100);
 }
