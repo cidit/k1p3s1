@@ -1,5 +1,5 @@
 #include <Arduino.h>
-
+// allo
 void setup() 
 {
   // Initialise le port de communication et attend pour l'ouvrir:
