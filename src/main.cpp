@@ -1,6 +1,8 @@
+
 #include <Arduino.h> 
 // Annabelle
 
+// allo
 void setup() 
 {
   // Initialise le port de communication et attend pour l'ouvrir:
