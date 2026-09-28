@@ -9,20 +9,20 @@ void setup()
 
 int32_t count_0;
 int32_t count_1;
-const float dist_roue = 0.18359; 
+const float dist_roue = 0.18359; // m
 //const float dist_roue = 0.21;
-const float circle = dist_roue*3.1416;
-const float ticks_per_turn = 3200.0;
+const float circle = dist_roue*3.1416; // m
+const float ticks_per_turn = 3200.0; //ticks
 
 float distance_0;
 float distance_1;
 
-float circumference = 0.2393893602;
+float circumference = 0.2393893602; // m
 
 const float speed = 0.7;
 
 
-void forwardInMeters(float meters){
+void JforwardInMeters(float meters){
   float target = meters/circumference * ticks_per_turn;
   Serial.print("target : ");
   Serial.println(target);
@@ -30,7 +30,50 @@ void forwardInMeters(float meters){
   float kp_correction = 0.00001;
   ENCODER_Reset(0);
   ENCODER_Reset(1);
-  while (abs(target - ENCODER_Read(0)) > 30 || abs(target - ENCODER_Read(1)) > 30){
+  while (abs(target - ENCODER_Read(0)) > 30 && abs(target - ENCODER_Read(1)) > 30){
+    int32_t count_0 = ENCODER_Read(0);
+    int32_t count_1 = ENCODER_Read(1);
+    float diff = count_0 - count_1;
+    float max = max(count_0, count_1);
+    diff = diff/max;
+    float error0 = target - count_0;
+    float error1 = target - count_1;
+    float speed0 = error0 * kp;
+    float speed1 = error1 * kp;
+    if (diff != 0){
+      float correction = diff * kp_correction;
+      MOTOR_SetSpeed(0, speed0 - correction);
+      MOTOR_SetSpeed(1, speed1 + correction);
+    }
+    else{
+      MOTOR_SetSpeed(0, speed0);
+      MOTOR_SetSpeed(1, speed1);
+    }
+  }
+}
+
+void RforwardInMeters(float meters){
+  ENCODER_Reset(0);
+  ENCODER_Reset(1);
+  int v_max = 0.7;
+
+  float target = meters/circumference * ticks_per_turn;
+
+  void accelerate(bool dir){
+    
+  }
+
+  void PID_forward(){
+    
+  }
+
+
+  Serial.print("target : ");
+  Serial.println(target);
+  float kp = 0.001;
+  float kp_correction = 0.00001;
+  
+  while (abs(target - ENCODER_Read(0)) > 30 && abs(target - ENCODER_Read(1)) > 30){
     int32_t count_0 = ENCODER_Read(0);
     int32_t count_1 = ENCODER_Read(1);
     float diff = count_0 - count_1;
@@ -55,8 +98,8 @@ void forwardInMeters(float meters){
 void rotationPID(float degrees){
   float target = (degrees/360.0) * circle * (ticks_per_turn/circumference);
   float kp = 0.0001;
-  float ki = 0.00000705;
-  float kd = 0.00000008;
+  float ki = 0.00000945;
+  float kd = 0.0008;
   float accumulated_error0 = 0.0;
   float accumulated_error1 = 0.0;
   ENCODER_Reset(0);
@@ -66,7 +109,7 @@ void rotationPID(float degrees){
   Serial.print("target : ");
   Serial.println(target);
   
-  while (abs(target - ENCODER_Read(0)) > 15 && abs(target + ENCODER_Read(1)) > 15){
+  while (abs(target - ENCODER_Read(0)) > 30 && abs(target + ENCODER_Read(1)) > 30){
   Serial.print("ERROR 0 : ");
   Serial.println(target - ENCODER_Read(0));
   Serial.print("ERROR 1 : ");
@@ -80,10 +123,7 @@ void rotationPID(float degrees){
   
   float speed0 = (error0 * kp) + (accumulated_error0 * ki) + (derivative0 * kd);
   float speed1 = -((error1 * kp) + (accumulated_error1 * ki) + (derivative1 * kd));
-  //float speed0 = (error0 * kp) + (accumulated_error0 * ki);
-  //float speed1 = -((error1 * kp) + (accumulated_error1 * ki));
-  //float speed0 = (error0 * kp);
-  //float speed1 = -(error1 * kp);
+
     
   Serial.print("speed0 : ");
   Serial.println(speed0);
@@ -146,7 +186,17 @@ void loop()
 
   while(true){delay(100);}*/
   
-  rotationPID(180);
+  JforwardInMeters(1.0);
   delay(2000);
   
+}
+
+void EforwardInMeters(float meters){
+  float target = meters/circumference * ticks_per_turn;
+  Serial.print("target : ");
+  Serial.println(target);
+  float kp = 0.001;
+  float kp_correction = 0.00001;
+  ENCODER_Reset(0);
+  ENCODER_Reset(1);
 }
