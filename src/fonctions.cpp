@@ -7,7 +7,7 @@ void forwardInMeters(float meters) {
   Serial.print("Target ticks: ");
   Serial.println(target);
 
-  float kp = 0.00005;
+  float kp = 0.00006;
   float ki = 0.00000001;
   float kp_correction = 0.005; 
 
@@ -45,23 +45,19 @@ void forwardInMeters(float meters) {
 
 void rotationPID(float degrees){
   float target = (degrees/360.0) * circle * (ticks_per_turn/circumference);
-  float kp = 0.0001;
-  float ki = 0.00000975;//0.00000945
-  float kd = 0.0008;
+  float kp = 0.000001;
+  float ki = 0.0000000959;//0.00000945
+  float kd = 0.01;
   float accumulated_error0 = 0.0;
   float accumulated_error1 = 0.0;
   ENCODER_Reset(0);
   ENCODER_Reset(1);
   float previous_error0 = target - ENCODER_Read(0);
   float previous_error1 = target + ENCODER_Read(1);
-  Serial.print("target : ");
-  Serial.println(target);
+
   
-  while (abs(target - ENCODER_Read(0)) > 30 && abs(target + ENCODER_Read(1)) > 30){
-  Serial.print("ERROR 0 : ");
-  Serial.println(target - ENCODER_Read(0));
-  Serial.print("ERROR 1 : ");
-  Serial.println(target + ENCODER_Read(1));
+  while (abs(target - ENCODER_Read(0)) > 5 && abs(target + ENCODER_Read(1)) > 5){
+
 
   float error0 = target - ENCODER_Read(0);
   float error1 = target + ENCODER_Read(1);
@@ -97,8 +93,10 @@ bool check_open(){
     }
 }
 
-void reset_bool(bool bool_x[]){
-  for(int i = 0; i < 3; i++){
-    bool_x[i] = 0;
-  }
+void avancer(){
+  forwardInMeters(0.5);
+}
+
+void reculer(){
+  forwardInMeters(-0.5);
 }

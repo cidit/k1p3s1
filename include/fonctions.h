@@ -11,10 +11,11 @@ const float ticks_per_turn = 3200.0; //ticks
 
 
 void forwardInMeters(float meters);
-
 void rotationPID(float degrees);
+
+// Bonne fonctions : 
 void turn_right();
 void turn_left();
-
 bool check_open();
-void reset_bool(bool bool_x[]);
+void avancer();
+void reculer();
