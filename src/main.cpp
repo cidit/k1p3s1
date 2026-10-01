@@ -18,16 +18,26 @@ void setup(){
 }
 
 void nouvelle_position(){
+
   if (etat_directionnel_du_robot == "Droite"){
-    position_robot[0] = position_robot[0] + 1;
+    if (position_robot[0] < 2){
+      position_robot[0]++;
+    }
   }
   else if (etat_directionnel_du_robot == "Gauche"){
-    position_robot[0] = position_robot[0] - 1;
+    if (position_robot[0] > 0){
+      position_robot[0]--;
+    }
   }
   else if (etat_directionnel_du_robot == "Haut"){
-    position_robot[1] = position_robot[1] - 1;
+    if (position_robot[1] > 0){
+      position_robot[1]--;
+    }
   }
-  else{position_robot[1] = position_robot[1] + 1;
+  else{
+    if (position_robot[1] < 9){
+      position_robot[1]++;
+    }
   }
 }
 
@@ -51,37 +61,46 @@ void tourner_vers_le_bas(){
 
 void nouvel_endroit_check(){
   for (int i = 0; i < 3; ++i){
+
+    if (i == position_robot[0]){
+      continue;
+    }
+
     if (matrice_de_mur[position_robot[1]][i] == 0){
-      if (i > position_robot[0]){ // la nouvelle position est a la droite du robot selon la matrice
+
+      if (i > position_robot[0]){
         turn_left();
         etat_directionnel_du_robot = "Droite";
         delay(300);
       }
-      else{ // la nouvelle position est a la gauche du robot selon la matrice
+      else{
         turn_right();
         etat_directionnel_du_robot = "Gauche";
         delay(300);
       }
+
       Serial.print("Direction : ");
       Serial.println(etat_directionnel_du_robot);
+
       if (abs(i-position_robot[0]) > 1){
-        delay(300);
         avancer();
         nouvelle_position();
+
         avancer();
         nouvelle_position();
-        tourner_vers_le_bas();
       }
       else{
-        delay(300);
         avancer();
         nouvelle_position();
-        tourner_vers_le_bas();
       }
+
+      tourner_vers_le_bas();
+
       Serial.print("x = ");
       Serial.print(position_robot[0]);
       Serial.print(", y = ");
       Serial.println(position_robot[1]);
+
       return;
     }
   }
