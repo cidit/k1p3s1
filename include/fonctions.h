@@ -12,9 +12,11 @@ const float ticks_per_turn = 3200.0; //ticks
 void forwardInMeters(float meters);
 
 void rotationPID(float degrees);
+void finalDance(float degrees);
 void turn_right();
 void turn_left();
 
 bool check_open();
 void reset_bool(bool bool_x[]);
 void forwardInMetersTrapeze(float meters);
+ 

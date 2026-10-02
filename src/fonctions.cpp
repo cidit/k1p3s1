@@ -3,7 +3,8 @@
 
 
 void forwardInMeters(float meters) {
-  float target = (meters / circumference) * ticks_per_turn;
+  float offset = 0.0;
+  float target = ((meters+offset) / circumference) * ticks_per_turn;
 
   float kp = 0.00006;
   float ki = 0.00000001;
@@ -16,7 +17,7 @@ void forwardInMeters(float meters) {
   ENCODER_Reset(0);
   ENCODER_Reset(1);
 
-  while (abs(target - ENCODER_Read(0)) > 30 || abs(target - ENCODER_Read(1)) > 30) {
+  while (abs(target - ENCODER_Read(0)) > 10 and abs(target - ENCODER_Read(1)) > 10) {
     int32_t count_0 = ENCODER_Read(0);
     int32_t count_1 = ENCODER_Read(1);
 
@@ -41,10 +42,11 @@ void forwardInMeters(float meters) {
   MOTOR_SetSpeed(1, 0); 
 }
 void rotationPID(float degrees){
-  float target = (degrees/360.0) * circle * (ticks_per_turn/circumference);
+  float offset = 1.8*(degrees/abs(degrees));
+  float target = ((degrees+offset)/360.0) * circle * (ticks_per_turn/circumference);
   float kp = 0.000001;
   float ki = 0.0000000959;
-  float kd = 0.01;
+  float kd = 0.02;
   float accumulated_error0 = 0.0;
   float accumulated_error1 = 0.0;
   ENCODER_Reset(0);
@@ -75,6 +77,37 @@ void rotationPID(float degrees){
   previous_error0 = error0;
   previous_error1 = error1;
   }
+  MOTOR_SetSpeed(0, 0);
+  MOTOR_SetSpeed(1, 0);
+}
+void finalDance(float degrees) {
+  float target = (degrees / 360.0) * circle * (ticks_per_turn / circumference);
+  
+  float kp = 0.05;
+  float kd = 0.01;
+  float previous_error0 = target - ENCODER_Read(0);
+  float previous_error1 = target + ENCODER_Read(1);
+
+  ENCODER_Reset(0);
+  ENCODER_Reset(1);
+  while (abs(target - ENCODER_Read(0)) > 10 || abs(target + ENCODER_Read(1)) > 10) {
+
+    float error0 = target - ENCODER_Read(0);
+    float error1 = target + ENCODER_Read(1);
+
+    float derivative0 = error0 - previous_error0;
+    float derivative1 = error1 - previous_error1;
+
+    float speed0 = (error0 * kp) + (derivative0 * kd);
+    float speed1 = -((error1 * kp) + (derivative1 * kd));
+
+    speed0 = constrain(speed0, -1.0, 1.0);
+    speed1 = constrain(speed1, -1.0, 1.0);
+
+    MOTOR_SetSpeed(0, speed0);
+    MOTOR_SetSpeed(1, speed1);
+  }
+
   MOTOR_SetSpeed(0, 0);
   MOTOR_SetSpeed(1, 0);
 }

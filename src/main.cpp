@@ -59,16 +59,17 @@ void loop(){
   if(pose_y >= 11){ // FIN !
     delay(2000);
     retourne(retour, pose_x);
+    finalDance(180);
     exit(0);
   }
   
   
   if(check_open() and !force_back){
-    forwardInMeters(0.5);
+    forwardInMetersTrapeze(0.5);
     pose_y++;
     delay(300);
     if(!check_open() and pose_y % 2 == 0){
-      forwardInMeters(-0.5);
+      forwardInMetersTrapeze(-0.5);
       pose_y--;
       bool_x[pose_x] = true;\
       force_back = true;
@@ -86,13 +87,13 @@ void loop(){
     delay(300);
     Serial.println("0");
     if(check_open()){
-      forwardInMeters(0.5);
+      forwardInMetersTrapeze(0.5);
       pose_x++;
       
     }
     else{
       bool_x[pose_x] = true;
-      forwardInMeters(-0.5);
+      forwardInMetersTrapeze(-0.5);
       pose_x--;
     }
     turn_left();
@@ -104,8 +105,8 @@ void loop(){
     pose_x-=2;
     turn_left();
     delay(300);
-    forwardInMeters(0.5);
-    forwardInMeters(0.5);
+    forwardInMetersTrapeze(1.0);
+    //forwardInMetersTrapeze(0.5);
     Serial.println("1");
     turn_right();
     delay(300);
@@ -116,11 +117,10 @@ void loop(){
     bool_x[pose_x] = true;
     turn_left();
     delay(300);
-    forwardInMeters(0.5);
+    forwardInMetersTrapeze(0.5);
     pose_x--;
     Serial.println("2");
     turn_right();
     delay(300);
   }
-
 }
