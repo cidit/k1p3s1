@@ -26,14 +26,15 @@ void retourne(std::stack<int> retour, int pose_x){
     retour.pop();
 
     if (pose_x == top ){
-      forwardInMetersTrapeze(-0.5);
+      forwardInMetersTrapeze(-1.0);
     }
 
     else if(pose_x<top ){
       turn_left();
       delay(300);
+      forwardInMetersTrapeze((top - pose_x) * -0.5);
       for (int i =0; i <= top  - pose_x; i++){
-        forwardInMetersTrapeze(-0.5);
+        //forwardInMetersTrapeze(-0.5);
         pose_x ++;
       }
       turn_right();
@@ -44,8 +45,9 @@ void retourne(std::stack<int> retour, int pose_x){
     else{
       turn_right();
       delay(300);
+      forwardInMetersTrapeze((pose_x - top) * -0.5);
       for (int i =0; i <= pose_x - top; i++){
-        forwardInMetersTrapeze(-0.5);
+        //forwardInMetersTrapeze(-0.5);
         pose_x --;
       }
       turn_left();
@@ -65,10 +67,11 @@ void loop(){
   
   
   if(check_open() and !force_back){
-    forwardInMetersTrapeze(0.5);
+    forwardInMetersTrapeze(1.0);
+    pose_y++;
     pose_y++;
     delay(300);
-    if(!check_open() and pose_y % 2 == 0){
+    /*if(!check_open() and pose_y % 2 == 0){
       forwardInMetersTrapeze(-0.5);
       pose_y--;
       bool_x[pose_x] = true;\
@@ -76,8 +79,9 @@ void loop(){
     }else{
       reset_bool(bool_x);
       retour.push(pose_x);
-    }
-    
+    }*/
+    reset_bool(bool_x);
+    retour.push(pose_x);
   }
   
   else if(pose_x < 2 and bool_x[pose_x+1] == false){
@@ -96,14 +100,15 @@ void loop(){
       forwardInMetersTrapeze(-0.5);
       pose_x--;
     }
-    turn_left();
+    turn_back_left();
+    //turn_left();
     delay(300);
   }
 
   else if (pose_x == 2 and bool_x[pose_x-1] == true){ 
     force_back = false;
     pose_x-=2;
-    turn_left();
+    turn_back_left();
     delay(300);
     forwardInMetersTrapeze(1.0);
     //forwardInMetersTrapeze(0.5);

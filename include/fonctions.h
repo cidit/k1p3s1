@@ -15,6 +15,8 @@ void rotationPID(float degrees);
 void finalDance(float degrees);
 void turn_right();
 void turn_left();
+void turn_back_right();
+void turn_back_left();
 
 bool check_open();
 void reset_bool(bool bool_x[]);
