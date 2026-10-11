@@ -21,7 +21,7 @@ bool listen_5khz(int pin_son_ambiant, int pin_son_5khz, int nmb_sample, int samp
         int son_5khz = analogRead(pin_son_5khz);
         sum_son_ambiant = sum_son_ambiant + son_ambiant;
         sum_son_5khz = sum_son_5khz + son_5khz;
-
+        
         delay(sample_time);
     }
     
