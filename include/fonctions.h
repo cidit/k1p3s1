@@ -9,6 +9,10 @@ const float dist_roue = 0.18359; // m
 const float circle = dist_roue*3.1416; // m
 const float ticks_per_turn = 3200.0; //ticks
 
+//pins du sifflet
+const int pin_ambiant = A0;
+const int pin_sifflet = A1;
+
 
 void forwardInMeters(float meters);
 
@@ -18,3 +22,5 @@ void turn_left();
 
 bool check_open();
 void reset_bool(bool bool_x[]);
+
+int wait_for_start();
