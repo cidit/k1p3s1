@@ -42,7 +42,8 @@ float timer_periods_since(const TimerContext &ctx, timestamp_t time)
 }
 
 /**
- * Updates the timer by stepping in fixed steps (defined py the timer's period).
+ * Updates the timer by stepping in fixed steps (defined py the timer's period). Useful when precise
+ * timing is important.
  * @note Since this function can invalidate `timer_ready`, it should be called at the
  *       end of the `loop` if `timer_ready` is relied upon within it.
  * @returns the amount of periods elapsed since the last update.
