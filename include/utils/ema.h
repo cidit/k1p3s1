@@ -31,6 +31,10 @@ EmaContext make_EMA(
 }
 
 void EMA_add(EmaContext&ctx, float new_point) {
-    ctx.current = ctx.alpha*new_point + (1-ctx.alpha)*ctx.current;
-    ctx.ready = true; // we now have at least one value
+    if (ctx.ready) {
+        ctx.current = ctx.alpha*new_point + (1-ctx.alpha)*ctx.current;
+    } else {
+        ctx.current = new_point;
+        ctx.ready = true; // we now have at least one value
+    }
 }
