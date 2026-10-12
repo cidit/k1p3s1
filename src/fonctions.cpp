@@ -177,3 +177,63 @@ void reset_bool(bool bool_x[]){
     bool_x[i] = 0;
   }
 }
+
+float integral_difference_read(int pin_ambiant, int pin_5khz, int interval, int sample_size, int sample_time)
+{
+    /**
+     * @brief Calcule la différence entre les aires sous la courbes de deux fonctions d'entrées analog IN
+     * @details Fait la moyenne mobile simple de deux séries de points, les multiplie par une certaine intervalle de temps, puis les soustrait
+     * @param pin_ambiant La pin analog IN connectée à la sortie du circuit pour le bruit ambiant
+     * @param pin_5khz La pin analog IN connectée à la sortie du circuit pour l'amplificateur de 5 kHz 
+     * @param interval Le temps d'attente entre deux appels de la fonction
+     * @param sample_size La quantité de lectures analog pour faire la moyenne des points
+     * @param sample_time Le temps d'attente entre deux séries de lectures analog
+     * @return La différence entre les aires sous la courbe des deux fonctions d'entrées analog IN (float)
+     */
+    float sum_ambiant = 0;
+    float sum_5khz = 0;
+
+    for (int i = 0; i < sample_size; i++) 
+    {
+        int reading_ambiant = analogRead(pin_ambiant);
+        int reading_5khz = analogRead(pin_5khz);
+        sum_ambiant += reading_ambiant;
+        sum_5khz += reading_5khz;
+        delay(sample_time);
+    }
+
+    float average_reading_ambiant = sum_ambiant / sample_size; 
+    float average_reading_5khz = sum_5khz / sample_size;
+
+    float integral_ambiant = average_reading_ambiant * interval;
+    float integral_5khz = average_reading_5khz * interval;
+
+    float integral_difference = integral_5khz - integral_ambiant;
+
+    delay(interval);
+
+    return integral_difference;
+}
+
+bool is_sifflet(int pin_ambiant, int pin_5khz, int patience, float integral_thr) 
+{
+    /**
+     * @brief Vérifie si un sifflet a été entendu
+     * @details Additionne integral_difference_read() à une somme sur un certain nombre d'itérations, en regardant à chaque fois si cette somme atteint un certain integral_thr
+     * @param pin_ambiant La pin analog IN connectée à la sortie du circuit pour le bruit ambiant
+     * @param pin_5khz La pin analog IN connectée à la sortie du circuit pour l'amplificateur de 5 kHz
+     * @param patience Le nombre de mises à jour permises à integral_sum pour atteindre integral_thr
+     * @param integral_thr Le minimum requis pour que la fonction retourne True
+     * @return Un booléen
+     */
+    float integral_sum = 0.0;
+    for (int i = 0; i < patience; i++) {
+        integral_sum += integral_difference_read(pin_ambiant, pin_5khz, 100, 5, 5);
+        //Serial.print(String(integral_sum));
+        if (integral_sum > integral_thr) {
+            return true;
+        }
+    }
+    Serial.print("\n");
+    return false;
+}
