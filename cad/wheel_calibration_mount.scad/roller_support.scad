@@ -9,9 +9,11 @@ w = struct_val(bi, "width");
 
 cuboid([45, 5, 30], rounding=5, edges=[LEFT+TOP, RIGHT+TOP]) {
   attach(FRONT, BOT, align=[TOP + RIGHT, TOP + LEFT], inset=2)
-    cyl(d=d + 1, h=3)
+    cyl(d=d + 1, h=0.5)
       attach(TOP, BOT)
-        cyl(d=d+0.15, h=w) *#ball_bearing("608ZZ") roller();
+        cyl(d=d+0.15, h=w) *ball_bearing("608ZZ") roller();
   align(FRONT, align=[BOT+LEFT, BOT+RIGHT])
-    wedge([10, 20, 5], spin=180);
+    diff() wedge([10, 20, 9], spin=180)
+      attach("bot_edge", FWD+LEFT, inside=true)
+      rounding_edge_mask(r=1.2, l=$edge_length+1);
 }
