@@ -21,5 +21,5 @@ void turn_left();
 bool check_open();
 void forwardInMetersTrapeze(float meters);
 
-float integral_difference_read(int pin_ambiant, int pin_5khz, int interval, int sample_size, int sample_time);
+float difference_read(int pin_ambiant, int pin_5khz, int interval, int sample_size, int sample_time);
 bool is_sifflet(int pin_ambiant, int pin_5khz, int patience, float integral_thr);
