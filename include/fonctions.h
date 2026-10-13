@@ -1,3 +1,6 @@
+#ifndef FONCTIONS_H
+#define FONCTIONS_H
+
 #include <Arduino.h>
 #include <LibRobus.h>
 
@@ -17,6 +20,8 @@ void rotationPID(float degrees);
 void finalDance(float degrees);
 void turn_right();
 void turn_left();
+void turn_back_right();
+void turn_back_left();
 
 bool check_open();
 void forwardInMetersTrapeze(float meters);
@@ -24,4 +29,6 @@ void forwardInMetersTrapeze(float meters);
 float average_read(int pin_analog, int sample_size, int sample_time);
 float difference(int pin_ambiant, int pin_5khz, int interval, int sample_size, int sample_time);
 bool is_sifflet(/* EmaContext f_ambiant, EmaContext f_5khz, */int pin_ambiant, int pin_5khz, int patience, float thr, int interval); 
+void reset_bool(bool bool_x[]);
 
+#endif // FONCTIONS_H
