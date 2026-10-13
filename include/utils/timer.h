@@ -6,12 +6,12 @@
 struct TimerContext
 {
     timestamp_t period_ms;
-    timestamp_t last_mm;
+    timestamp_t last_ms;
 };
 
 TimerContext make_timer(timestamp_t period_ms, timestamp_t start_at_ms)
 {
-    return TimerContext{.period_ms = period_ms, .last_mm = start_at_ms};
+    return TimerContext{.period_ms = period_ms, .last_ms = start_at_ms};
 }
 
 /**
@@ -21,7 +21,7 @@ TimerContext make_timer(timestamp_t period_ms, timestamp_t start_at_ms)
  */
 int64_t timer_delta(const TimerContext &ctx, timestamp_t now)
 {
-    return now - int64_t(ctx.last_mm + ctx.period_ms);
+    return now - int64_t(ctx.last_ms + ctx.period_ms);
 }
 
 bool timer_ready(const TimerContext &ctx, timestamp_t now)
@@ -37,7 +37,7 @@ bool timer_ready(const TimerContext &ctx, timestamp_t now)
  */
 float timer_periods_since(const TimerContext &ctx, timestamp_t time)
 {
-    auto time_elapsed = ctx.last_mm - int64_t(time);
+    auto time_elapsed = ctx.last_ms - int64_t(time);
     return time_elapsed / float(ctx.period_ms);
 }
 
@@ -54,9 +54,9 @@ size_t timer_update_fixed(TimerContext &ctx, timestamp_t now)
     {
         return 0;
     }
-    auto time_since_last = now - ctx.last_mm;
+    auto time_since_last = now - ctx.last_ms;
     auto rollovers = time_since_last / ctx.period_ms;
-    ctx.last_mm += ctx.period_ms * rollovers;
+    ctx.last_ms += ctx.period_ms * rollovers;
     return rollovers;
 }
 
@@ -65,5 +65,5 @@ size_t timer_update_fixed(TimerContext &ctx, timestamp_t now)
  */
 void timer_reset(TimerContext &ctx, timestamp_t now)
 {
-    ctx.last_mm = now;
+    ctx.last_ms = now;
 }
