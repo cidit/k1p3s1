@@ -5,8 +5,8 @@
 TimerContext ema_timer = make_timer(10, 0);
 TimerContext graph_timer = make_timer(500, 0);
 
-EmaContext ambiant_ema = make_EMA(ema_timer.period_ms, .1);
-EmaContext f5kHz_ema = make_EMA(ema_timer.period_ms, .1);
+EmaContext ambiant_ema = make_EMA(ema_timer.period_ms, 1);
+EmaContext f5kHz_ema = make_EMA(ema_timer.period_ms, 1);
 
 
 void setup() 

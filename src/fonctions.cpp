@@ -178,7 +178,7 @@ void reset_bool(bool bool_x[]){
   }
 }
 
-float difference_read(int pin_ambiant, int pin_5khz, int interval, int sample_size, int sample_time)
+float difference(int pin_ambiant, int pin_5khz, int interval, int sample_size, int sample_time)
 {
     /**
      * @brief Calcule la différence entre les points de deux fonctions d'entrées analog IN
@@ -216,7 +216,7 @@ bool is_sifflet(int pin_ambiant, int pin_5khz, int patience, float difference_th
 {
     /**
      * @brief Vérifie si un sifflet a été entendu
-     * @details Additionne difference_read() à une somme sur un certain nombre d'itérations, en regardant à chaque fois si cette somme atteint un certain difference_thr
+     * @details Additionne difference() à une somme sur un certain nombre d'itérations, en regardant à chaque fois si cette somme atteint un certain difference_thr
      * @param pin_ambiant La pin analog IN connectée à la sortie du circuit pour le bruit ambiant
      * @param pin_5khz La pin analog IN connectée à la sortie du circuit pour l'amplificateur de 5 kHz
      * @param patience Le nombre de mises à jour permises à difference_sum pour atteindre difference_thr
@@ -225,7 +225,7 @@ bool is_sifflet(int pin_ambiant, int pin_5khz, int patience, float difference_th
      */
     float difference_sum = 0.0;
     for (int i = 0; i < patience; i++) {
-        difference_sum += difference_read(pin_ambiant, pin_5khz, 100, 5, 5);
+        difference_sum += difference(pin_ambiant, pin_5khz, 100, 5, 5);
         //Serial.print(String(difference_sum));
         if (difference_sum > difference_thr) {
             return true;
