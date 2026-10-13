@@ -3,7 +3,7 @@
 
 
 void forwardInMeters(float meters) {
-  float offset = 0.0;
+  float offset = 1.8;
   float target = ((meters+offset) / circumference) * ticks_per_turn;
 
   float kp = 0.00006;
@@ -42,11 +42,13 @@ void forwardInMeters(float meters) {
   MOTOR_SetSpeed(1, 0); 
 }
 void rotationPID(float degrees){
-  float offset = 0.0*(degrees/abs(degrees));
+  float sens = degrees / abs(degrees);
+  float offset = 2.5 * sens;
   float target = ((degrees+offset)/360.0) * circle * (ticks_per_turn/circumference);
   float kp = 0.000001;
   float ki = 0.0000000959;
   float kd = 0.02;
+  float kp_correction = 0.00005;
   float accumulated_error0 = 0.0;
   float accumulated_error1 = 0.0;
   ENCODER_Reset(0);
@@ -57,11 +59,17 @@ void rotationPID(float degrees){
   
   while (abs(target - ENCODER_Read(0)) > 5 && abs(target + ENCODER_Read(1)) > 5){
 
+  int32_t count_0 = ENCODER_Read(0);
+  int32_t count_1 = ENCODER_Read(1);
+
   float error0 = target - ENCODER_Read(0);
   float error1 = target + ENCODER_Read(1);
 
   float derivative0 = error0 - previous_error0;
   float derivative1 = error1 - previous_error1;
+
+  float diff = (float)(abs(count_0) - abs(count_1));
+  float correction = diff * kp_correction * sens;
   
   float speed0 = (error0 * kp) + (accumulated_error0 * ki) + (derivative0 * kd);
   float speed1 = -((error1 * kp) + (accumulated_error1 * ki) + (derivative1 * kd));
@@ -70,8 +78,8 @@ void rotationPID(float degrees){
   //float speed0 = error0 * kp;
   //float speed1 = -error1 * kp;
 
-  MOTOR_SetSpeed(0, speed0);
-  MOTOR_SetSpeed(1, speed1);
+  MOTOR_SetSpeed(0, speed0 + correction);
+  MOTOR_SetSpeed(1, speed1 - correction);
   accumulated_error0 += error0;
   accumulated_error1 += error1;
   previous_error0 = error0;
@@ -117,10 +125,10 @@ void turn_right(){
 void turn_left(){
   rotationPID(-90);
 }
-void turn_back_right(){
+void turn_right_more(){
   rotationPID(91);
 }
-void turn_back_left(){
+void turn_left_more(){
   rotationPID(-91);
 }
 
@@ -144,8 +152,8 @@ void forwardInMetersTrapeze(float meters) {
     start = millis();
     it ++;
     }
-    else if(abs((ENCODER_Read(0) + ENCODER_Read(1))/2) > abs(target) * 0.6 and millis() - start >= 50 and abs(speed) > 0.2){
-      speed -=0.05 * signe;
+    else if(abs((ENCODER_Read(0) + ENCODER_Read(1))/2) > abs(target) * 0.8 and millis() - start >= 50 and abs(speed) > 0.2){
+      speed -=0.1 * signe;
       start = millis();
     } 
     int32_t count_0 = ENCODER_Read(0);

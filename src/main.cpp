@@ -39,7 +39,7 @@ void retourne(std::stack<int> retour, int pose_x){
       }
       turn_right();
       delay(300);
-      forwardInMetersTrapeze(-0.5);
+      forwardInMetersTrapeze(-1.0);
     }
 
     else{
@@ -52,7 +52,7 @@ void retourne(std::stack<int> retour, int pose_x){
       }
       turn_left();
       delay(300);
-      forwardInMetersTrapeze(-0.5);
+      forwardInMetersTrapeze(-1.0);
     }
   }
 }
@@ -67,21 +67,23 @@ void loop(){
   
   
   if(check_open() and !force_back){
-    forwardInMetersTrapeze(1.0);
+    forwardInMetersTrapeze(0.5);
     pose_y++;
-    pose_y++;
-    delay(300);
-    /*if(!check_open() and pose_y % 2 == 0){
+    //delay(300);
+    if(!check_open() and pose_y % 2 == 0){
       forwardInMetersTrapeze(-0.5);
       pose_y--;
       bool_x[pose_x] = true;\
       force_back = true;
     }else{
+      forwardInMetersTrapeze(0.5); 
+      pose_y++;    
       reset_bool(bool_x);
       retour.push(pose_x);
-    }*/
+    }
     reset_bool(bool_x);
     retour.push(pose_x);
+    //delay(300);
   }
   
   else if(pose_x < 2 and bool_x[pose_x+1] == false){
@@ -100,7 +102,8 @@ void loop(){
       forwardInMetersTrapeze(-0.5);
       pose_x--;
     }
-    turn_back_left();
+    //delay(300);
+    turn_left_more();
     //turn_left();
     delay(300);
   }
@@ -108,11 +111,11 @@ void loop(){
   else if (pose_x == 2 and bool_x[pose_x-1] == true){ 
     force_back = false;
     pose_x-=2;
-    turn_back_left();
+    turn_left_more();
     delay(300);
     forwardInMetersTrapeze(1.0);
     //forwardInMetersTrapeze(0.5);
-    Serial.println("1");
+    //delay(300);
     turn_right();
     delay(300);
   }
@@ -124,7 +127,7 @@ void loop(){
     delay(300);
     forwardInMetersTrapeze(0.5);
     pose_x--;
-    Serial.println("2");
+    //delay(300);
     turn_right();
     delay(300);
   }
