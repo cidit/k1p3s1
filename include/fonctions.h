@@ -21,5 +21,7 @@ void turn_left();
 bool check_open();
 void forwardInMetersTrapeze(float meters);
 
+float average_read(int pin_analog, int sample_size, int sample_time);
 float difference(int pin_ambiant, int pin_5khz, int interval, int sample_size, int sample_time);
-bool is_sifflet(int pin_ambiant, int pin_5khz, int patience, float integral_thr);
+bool is_sifflet(/* EmaContext f_ambiant, EmaContext f_5khz, */int pin_ambiant, int pin_5khz, int patience, float thr, int interval); 
+

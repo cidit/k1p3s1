@@ -42,12 +42,12 @@ float difference(int pin_ambiant, int pin_5khz, int interval, int sample_size, i
 }
 
 
-bool is_sifflet(EmaContext f_ambiant, EmaContext f_5khz, int patience, float thr, int interval) 
+bool is_sifflet(/* EmaContext f_ambiant, EmaContext f_5khz, */int pin_ambiant, int pin_5khz, int patience, float thr, int interval) 
 {
     float sum = 0.0;
     for (int i = 0; i < patience; i++) {
-        //sum += difference(pin_ambiant, pin_5khz, interval, 5, 10);
-        sum += difference_ema(f_ambiant, f_5khz);
+        sum += difference(pin_ambiant, pin_5khz, interval, 5, 10);
+        //sum += difference_ema(f_ambiant, f_5khz);
         if (sum > thr / patience * i) {
             return true;
         }
@@ -78,7 +78,7 @@ void setup()
 
 void loop()
 {
-    if (!started_robot && is_sifflet(f_ambiant, f_5khz, 5, 0, 100)) 
+    if (!started_robot && is_sifflet(pin_ambiant, pin_5khz, 5, 0, 100)) 
     { // Vérifie sur un temps de (patience * interval + sample_time * sample_size) ms si le sifflet à été entendu
         started_robot = true;
         Serial.println("J'ai entendu le sifflet");
