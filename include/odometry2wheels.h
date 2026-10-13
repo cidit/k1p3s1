@@ -16,9 +16,13 @@ struct OdometryContext
     float orientation_rad;
 };
 
-/**
- *
- */
+OdometryContext make_odometry() {
+    return OdometryContext {
+        .position_mm = Vec2D {.x = 0, .y=0},
+        .orientation_rad = 0,
+    };
+}
+
 void odometry_update(OdometryContext &ctx,
                      float distance_right_mm,
                      float distance_left_mm,
