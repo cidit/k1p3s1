@@ -29,6 +29,6 @@ void ring_buffer_append(RingBuffer<len> &rb, float value) {
 
 template<size_t len>
 float ring_buffer_read_nth(const RingBuffer<len> &rb, size_t n) {
-    auto actual_idx = (rb.idx + n) % rb.len;
+    auto actual_idx = (rb.idx + n) % len;
     return rb.buffer[actual_idx]; 
 }
