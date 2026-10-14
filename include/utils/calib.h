@@ -14,20 +14,20 @@ size_t __find_idx(float elements[n], float value)
 {
     // FIXME: This search algo can be replaced with a btree lookup, if someone 
     // wants to do that. It would become much better with large sets of data.
-    for (auto i = 0; i < n - 1; n++)
+    for (auto i = 0; i < n - 1; i++)
     {
-        if (x == elements[i])
+        if (value == elements[i])
         {
             return i;
         }
         auto low = elements[i];
         auto high = elements[i + 1];
-        if (low < x && high < x)
+        if (low < value && high < value)
         {
             return i;
         }
     }
-    return elements[n - 1]
+    return elements[n - 1];
 }
 
 template <int n>
