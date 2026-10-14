@@ -11,5 +11,6 @@ using timestamp_t = uint32_t;
  * tool like Teleplot. It can be found in the VSCode extenstions marketplace.
  */
 #define GRAPH(item) Serial.println(">" + String(#item) + ':' + String(item) + "|np");
+#define GRAPHT(item) Serial.println(">" + String(#item) + ':' + String(now) + ':' + String(item) + "|np");
 
 #define PLOT(name, x, y) Serial.println(">" + String(name) + ':' + String(x) + ':' + String(y) + "|xy");
