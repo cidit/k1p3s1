@@ -17,7 +17,7 @@ void forwardInMeters(float meters) {
   ENCODER_Reset(0);
   ENCODER_Reset(1);
 
-  while (abs(target - ENCODER_Read(0)) > 10 and abs(target - ENCODER_Read(1)) > 10) {
+  while (abs(target - ENCODER_Read(0)) > 10 or abs(target - ENCODER_Read(1)) > 10) {
     int32_t count_0 = ENCODER_Read(0);
     int32_t count_1 = ENCODER_Read(1);
 
@@ -42,10 +42,10 @@ void forwardInMeters(float meters) {
   MOTOR_SetSpeed(1, 0); 
 }
 void rotationPID(float degrees){
-  float offset = 0.0*(degrees/abs(degrees));
+  float offset = 3.0*(degrees/abs(degrees)); // 3b = 5.0 3a = 3.0
   float target = ((degrees+offset)/360.0) * circle * (ticks_per_turn/circumference);
-  float kp = 0.000001;
-  float ki = 0.0000000959;
+  float kp = 0.002;
+  float ki = 0.000001;
   float kd = 0.02;
   float accumulated_error0 = 0.0;
   float accumulated_error1 = 0.0;
@@ -55,7 +55,7 @@ void rotationPID(float degrees){
   float previous_error1 = target + ENCODER_Read(1);
   
   
-  while (abs(target - ENCODER_Read(0)) > 5 && abs(target + ENCODER_Read(1)) > 5){
+  while (abs(target - ENCODER_Read(0)) > 10 or abs(target + ENCODER_Read(1)) > 10){
 
   float error0 = target - ENCODER_Read(0);
   float error1 = target + ENCODER_Read(1);
@@ -65,17 +65,20 @@ void rotationPID(float degrees){
   
   float speed0 = (error0 * kp) + (accumulated_error0 * ki) + (derivative0 * kd);
   float speed1 = -((error1 * kp) + (accumulated_error1 * ki) + (derivative1 * kd));
-  //float speed0 = (error0 * kp) + (accumulated_error0 * ki);
-  //float speed1 = -((error1 * kp) + (accumulated_error1 * ki));
-  //float speed0 = error0 * kp;
-  //float speed1 = -error1 * kp;
+
+  if (speed0 > 0.3) speed0 = 0.3;
+  else if (speed0 < -0.3) speed0 = -0.3;
+
+  if (speed1 > 0.3) speed1 = 0.3;
+  else if (speed1 < -0.3) speed1 = -0.3;
 
   MOTOR_SetSpeed(0, speed0);
   MOTOR_SetSpeed(1, speed1);
   accumulated_error0 += error0;
   accumulated_error1 += error1;
   previous_error0 = error0;
-  previous_error1 = error1;
+  previous_error1 = error1;  
+  delay(10);
   }
   MOTOR_SetSpeed(0, 0);
   MOTOR_SetSpeed(1, 0);
@@ -138,19 +141,18 @@ void forwardInMetersTrapeze(float meters) {
   unsigned long start = millis();
 
   while (abs(target)>abs((ENCODER_Read(0) + ENCODER_Read(1))/2)) {
-    if(speed < abs(target_speed) and millis() - start >= 50 and abs((ENCODER_Read(0) + ENCODER_Read(1))/2) < abs(target) * 0.3){
+    if(abs(speed) < abs(target_speed) and millis() - start >= 50 and abs((ENCODER_Read(0) + ENCODER_Read(1))/2) < abs(target) * 0.3){
       //Accélère
     speed +=0.02 + it * 0.005 * signe;
     start = millis();
     it ++;
     }
     else if(abs((ENCODER_Read(0) + ENCODER_Read(1))/2) > abs(target) * 0.6 and millis() - start >= 50 and abs(speed) > 0.2){
-      speed -=0.05 * signe;
+      speed -=(0.022/abs(meters)) * signe;
       start = millis();
     } 
     int32_t count_0 = ENCODER_Read(0);
     int32_t count_1 = ENCODER_Read(1);
-
 
     float diff = (float)(count_0 - count_1);
     float correction = diff * kp_correction;

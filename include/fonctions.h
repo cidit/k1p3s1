@@ -3,13 +3,14 @@
 
 #include <Arduino.h>
 #include <LibRobus.h>
+#include <hardware.h>
 
 const int pin_vert = 48;
 const int pin_rouge = 49;
 const int pin_ambiant = A0;
 const int pin_5khz = A3;
-const float circumference = 0.2393893602; // m
-const float dist_roue = 0.18359; // m
+const float circumference = 0.24; // m
+const float dist_roue = (WHEEL_DISTANCE_OUTER - WHEEL_THICKNESS) / 1000.0; // m
 const float circle = dist_roue*3.1416; // m
 const float ticks_per_turn = 3200.0; //ticks
 

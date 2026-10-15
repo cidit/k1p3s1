@@ -10,6 +10,7 @@ int pose_x = 1;
 int pose_y = 1;
 bool bool_x[3] = {0, 0, 0};
 bool force_back = false;
+float return_fraction = 0.95;
 
 void retourne(std::stack<int> retour, int pose_x) {
   while (!retour.empty()) { 
@@ -18,27 +19,27 @@ void retourne(std::stack<int> retour, int pose_x) {
     retour.pop();
 
     if (pose_x == top) {
-      forwardInMetersTrapeze(-1.0);
+      forwardInMetersTrapeze(-1.0*return_fraction);
     } else if (pose_x < top) {
       turn_left();
       delay(300);
-      forwardInMetersTrapeze((top - pose_x) * -0.5);
+      forwardInMetersTrapeze((top - pose_x) * -0.5 * return_fraction);
       for (int i = 0; i <= top - pose_x; i++) {
         pose_x++;
       }
       turn_right();
       delay(300);
-      forwardInMetersTrapeze(-0.5);
+      forwardInMetersTrapeze(-1.0*return_fraction);
     } else {
       turn_right();
       delay(300);
-      forwardInMetersTrapeze((pose_x - top) * -0.5);
+      forwardInMetersTrapeze((pose_x - top) * -0.5 * return_fraction );
       for (int i = 0; i <= pose_x - top; i++) {
         pose_x--;
       }
       turn_left();
       delay(300);
-      forwardInMetersTrapeze(-0.5);
+      forwardInMetersTrapeze(-1.0*return_fraction);
     }
   }
 }
@@ -50,10 +51,12 @@ void setup() {
   pinMode(pin_5khz, INPUT);
   Serial.begin(9600);
   BoardInit();
+  retour.push(pose_x);
   delay(2000);
 }
 
 void loop() {
+
   if (!started_robot && is_sifflet(pin_ambiant, pin_5khz, 5, 0, 100)) {
     started_robot = true;
     Serial.println("J'ai entendu le sifflet");
@@ -72,7 +75,7 @@ void loop() {
     if (check_open() && !force_back) {
       forwardInMetersTrapeze(1.0);
       pose_y += 2;
-      delay(300);
+      //delay(300);
       reset_bool(bool_x);
       retour.push(pose_x);
     } else if (pose_x < 2 && bool_x[pose_x + 1] == false) {
@@ -80,7 +83,6 @@ void loop() {
       force_back = false;
       turn_right();
       delay(300);
-      Serial.println("0");
       if (check_open()) {
         forwardInMetersTrapeze(0.5);
         pose_x++;
@@ -89,15 +91,14 @@ void loop() {
         forwardInMetersTrapeze(-0.5);
         pose_x--;
       }
-      turn_back_left();
+      turn_left();
       delay(300);
     } else if (pose_x == 2 && bool_x[pose_x - 1] == true) { 
       force_back = false;
       pose_x -= 2;
-      turn_back_left();
+      turn_left();
       delay(300);
       forwardInMetersTrapeze(1.0);
-      Serial.println("1");
       turn_right();
       delay(300);
     } else {
@@ -107,7 +108,6 @@ void loop() {
       delay(300);
       forwardInMetersTrapeze(0.5);
       pose_x--;
-      Serial.println("2");
       turn_right();
       delay(300);
     }
