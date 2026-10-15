@@ -13,7 +13,7 @@ size_t __find_idx(const float *elements, size_t size, float value)
 {
     // FIXME: This search algo can be replaced with a btree lookup, if someone 
     // wants to do that. It would become much better with large sets of data.
-    for (auto i = 0; i < size - 1; i++)
+    for (size_t i = 0; i < size - 1; i++)
     {
         if (value == elements[i])
         {
