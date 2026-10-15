@@ -2,6 +2,7 @@
 #include <LibRobus.h>
 #include <stack>
 #include "fonctions.h"
+#include "parcours.h"
 
 bool started_robot = true;
 std::stack<int> retour;
@@ -32,83 +33,7 @@ void loop() {
   }
 
   if (started_robot) {
-    if ((check_open() and pose_x != 1) or (check_open() and pose_x == 1 and pose_y == 5))  {
-      forwardInMetersTrapeze(1.0);
-      pose_y += 2;
-      //delay(300);
-      reset_bool(bool_x);
-      retour.push(pose_x);
-  }
-
-  else if (pose_x < 2 && bool_x[pose_x + 1] == false) {
-    bool_x[pose_x] = true;
-    turn_right();
-    delay(300);
-    if (check_open()) {
-      forwardInMetersTrapeze(0.5);
-      pose_x++;
-    } else {
-      bool_x[pose_x] = true;
-      forwardInMetersTrapeze(-0.5);
-      pose_x--;
-    }
-    
-    turn_left();
-    delay(300);
-  } 
-
-  else if (pose_x == 2 && bool_x[pose_x - 1] == true) { 
-    pose_x -= 2;
-    turn_left();
-    delay(300);
-    forwardInMetersTrapeze(1.0);
-    turn_right();
-    delay(300);
-  } 
-  else if (pose_x == 0 and bool_x[pose_x + 2] == false) {
-    bool_x[pose_x] = true;
-    pose_x += 2;
-    turn_right();
-    delay(300);
-    forwardInMetersTrapeze(1.0);
-    turn_left();
-    delay(300);
-  }
-  else  {
-    bool_x[pose_x] = true;
-    turn_left();
-    delay(300);
-    forwardInMetersTrapeze(0.5);
-    pose_x--;
-    turn_right();
-    delay(300);
-  }
-  if (pose_y == 11 and pose_x == 0){
-    // tOURNE À droite, avance, tourne a droite moteur max
-    turn_right();
-    delay(300);
-    forwardInMetersTrapeze(0.5);
-    turn_right();
-    delay(300);
-    forwardInMetersTrapeze(5.5);
-    exit(0);
-
-  } 
-
-  else if (pose_y == 11 and pose_x == 2){
-      // Tourne a gauche, avance, tourne a gauche et moteur max
-      turn_left();
-      delay(300);
-      forwardInMetersTrapeze(0.5);
-      turn_left();
-      delay(300);
-      forwardInMetersTrapeze(5.5);
-      exit(0);
-
-    } 
-    if (pose_y == 5){
-      bool_x[1] = false;
-    }
+    try_parcours();
 }  
 }
 
