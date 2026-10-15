@@ -53,13 +53,13 @@ void loop() {
       pose_x--;
     }
     
-    turn_left();
+    turn_more_left();
     delay(300);
   } 
 
   else if (pose_x == 2 && bool_x[pose_x - 1] == true) { 
     pose_x -= 2;
-    turn_left();
+    turn_more_left();
     delay(300);
     forwardInMetersTrapeze(1.0);
     turn_right();
@@ -71,12 +71,12 @@ void loop() {
     turn_right();
     delay(300);
     forwardInMetersTrapeze(1.0);
-    turn_left();
+    turn_more_left();
     delay(300);
   }
   else  {
     bool_x[pose_x] = true;
-    turn_left();
+    turn_more_left();
     delay(300);
     forwardInMetersTrapeze(0.5);
     pose_x--;
@@ -97,10 +97,10 @@ void loop() {
 
   else if (pose_y == 11 and pose_x == 2){
       // Tourne a gauche, avance, tourne a gauche et moteur max
-      turn_left();
+      turn_more_left();
       delay(300);
       forwardInMetersTrapeze(0.5);
-      turn_left();
+      turn_more_left();
       delay(300);
       forwardInMetersTrapeze(5.5);
       exit(0);
