@@ -42,7 +42,7 @@ void forwardInMeters(float meters) {
   MOTOR_SetSpeed(1, 0); 
 }
 void rotationPID(float degrees){
-  float offset = 4.3*(degrees/abs(degrees)); // 3b = 5.0 3a = 4.3
+  float offset = 4.2*(degrees/abs(degrees)); // 3b = 5.0 3a = 4.3
   float target = ((degrees+offset)/360.0) * circle * (ticks_per_turn/circumference);
   float kp = 0.002; 
   float ki = 0.000001;
@@ -166,7 +166,7 @@ void forwardInMetersTrapeze(float meters) {
 
 
 bool check_open(){
-    if (digitalRead(pin_vert) or digitalRead(pin_rouge)){
+    if (digitalRead(pin_vert) and digitalRead(pin_rouge)){
         return true;
     }
     else{
