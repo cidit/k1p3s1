@@ -8,6 +8,7 @@ enum TaskState
 {
     SETUP,
     LOOP,
+    CLEANUP,
     DONE
 };
 
@@ -17,6 +18,7 @@ struct Task
     TaskState state;
     bool (*setup)(void*);
     bool (*loop)(void*);
+    bool (*cleanup)(void*);
 };
 
 void run_task(Task &task)
@@ -37,6 +39,15 @@ void run_task(Task &task)
         auto done = task.loop(task.context);
         if (done)
         {
+            task.state = CLEANUP;
+        }
+        break;
+    }
+    case CLEANUP:
+    {
+        auto done = task.cleanup(task.context);
+        if (done)
+        {
             task.state = DONE;
         }
         break;
@@ -48,7 +59,9 @@ void run_task(Task &task)
 
 template<typename Context,
          bool (*Setup)(Context*),
-         bool (*Loop)(Context*)>
+         bool (*Loop)(Context*),
+         bool (*Cleanup)(Context*)
+         >
 Task make_task(Context* ctx) {
     return Task {
         .context = static_cast<void*>(ctx),
@@ -58,6 +71,9 @@ Task make_task(Context* ctx) {
         },
         .loop = [](void* p) -> bool {
             return Loop(static_cast<Context*>(p));
+        },
+        .cleanup = [](void* p) -> bool {
+            return Cleanup(static_cast<Context*>(p));
         }
     };
 }
