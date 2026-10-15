@@ -1,5 +1,9 @@
 #pragma once
 
+/**
+ * /!\ this implementation works, but is fucking dogshit.
+ */
+
 enum TaskState
 {
     SETUP,
@@ -57,12 +61,3 @@ Task make_task(Context* ctx) {
         }
     };
 }
-
-struct IdleContext {} idlectx;
-bool idle_no_op(IdleContext*ctx) { return false; }
-
-Task IDLE = make_task<
-    IdleContext,
-    idle_no_op,
-    idle_no_op
->(&idlectx);
