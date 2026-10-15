@@ -42,9 +42,9 @@ void forwardInMeters(float meters) {
   MOTOR_SetSpeed(1, 0); 
 }
 void rotationPID(float degrees){
-  float offset = 6.0*(degrees/abs(degrees)); // 3b = 5.0 3a = 6.0
+  float offset = 4.45*(degrees/abs(degrees)); // 3b = 5.0 3a = 5.5
   float target = ((degrees+offset)/360.0) * circle * (ticks_per_turn/circumference);
-  float kp = 0.002;
+  float kp = 0.002; // 3b = 0.002 3a = 0.003
   float ki = 0.000001;
   float kd = 0.02;
   float accumulated_error0 = 0.0;
@@ -55,7 +55,7 @@ void rotationPID(float degrees){
   float previous_error1 = target + ENCODER_Read(1);
   
   
-  while (abs(target - ENCODER_Read(0)) > 10 and abs(target + ENCODER_Read(1)) > 10){
+  while (abs(target - ENCODER_Read(0)) > 30 or abs(target + ENCODER_Read(1)) > 30){
 
   float error0 = target - ENCODER_Read(0);
   float error1 = target + ENCODER_Read(1);
@@ -120,10 +120,10 @@ void turn_right(){
 void turn_left(){
   rotationPID(-90);
 }
-void turn_back_right(){
+void turn_more_right(){
   rotationPID(91);
 }
-void turn_back_left(){
+void turn_more_left(){
   rotationPID(-91);
 }
 
@@ -176,7 +176,8 @@ bool check_open(){
 
 void reset_bool(bool bool_x[]){
   for(int i = 0; i < 3; i++){
-    bool_x[i] = 0;
+    if (i == 1) bool_x[i] = 1;
+    else bool_x[i] = 0;
   }
 }
 

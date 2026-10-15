@@ -9,40 +9,7 @@ std::stack<int> retour;
 int pose_x = 1;
 int pose_y = 1;
 bool bool_x[3] = {0, 0, 0};
-bool force_back = false;
-float return_fraction = 0.95;
 
-void retourne(std::stack<int> retour, int pose_x) {
-  while (!retour.empty()) { 
-    int top = retour.top();
-    Serial.println(top);
-    retour.pop();
-
-    if (pose_x == top) {
-      forwardInMetersTrapeze(-1.0*return_fraction);
-    } else if (pose_x < top) {
-      turn_left();
-      delay(300);
-      forwardInMetersTrapeze((top - pose_x) * -0.5 * return_fraction);
-      for (int i = 0; i <= top - pose_x; i++) {
-        pose_x++;
-      }
-      turn_right();
-      delay(300);
-      forwardInMetersTrapeze(-1.0*return_fraction);
-    } else {
-      turn_right();
-      delay(300);
-      forwardInMetersTrapeze((pose_x - top) * -0.5 * return_fraction );
-      for (int i = 0; i <= pose_x - top; i++) {
-        pose_x--;
-      }
-      turn_left();
-      delay(300);
-      forwardInMetersTrapeze(-1.0*return_fraction);
-    }
-  }
-}
 
 void setup() {
   pinMode(pin_vert, INPUT);
@@ -56,60 +23,92 @@ void setup() {
 }
 
 void loop() {
-
   if (!started_robot && is_sifflet(pin_ambiant, pin_5khz, 5, 0, 100)) {
     started_robot = true;
     Serial.println("J'ai entendu le sifflet");
-  } else if (!started_robot) {
+  } 
+  else if (!started_robot) {
     Serial.println("Je n'ai pas entendu le sifflet");
   }
 
   if (started_robot) {
-    if (pose_y >= 11) { // FIN !
-      delay(2000);
-      retourne(retour, pose_x);
-      finalDance(180);
-      exit(0);
-    }
-    
-    if (check_open() && !force_back) {
+    if ((check_open() and pose_x != 1) or (check_open() and pose_x == 1 and pose_y == 5))  {
       forwardInMetersTrapeze(1.0);
       pose_y += 2;
       //delay(300);
       reset_bool(bool_x);
       retour.push(pose_x);
-    } else if (pose_x < 2 && bool_x[pose_x + 1] == false) {
-      bool_x[pose_x] = true;
-      force_back = false;
-      turn_right();
-      delay(300);
-      if (check_open()) {
-        forwardInMetersTrapeze(0.5);
-        pose_x++;
-      } else {
-        bool_x[pose_x] = true;
-        forwardInMetersTrapeze(-0.5);
-        pose_x--;
-      }
-      turn_left();
-      delay(300);
-    } else if (pose_x == 2 && bool_x[pose_x - 1] == true) { 
-      force_back = false;
-      pose_x -= 2;
-      turn_left();
-      delay(300);
-      forwardInMetersTrapeze(1.0);
-      turn_right();
-      delay(300);
+  }
+
+  else if (pose_x < 2 && bool_x[pose_x + 1] == false) {
+    bool_x[pose_x] = true;
+    turn_right();
+    delay(300);
+    if (check_open()) {
+      forwardInMetersTrapeze(0.5);
+      pose_x++;
     } else {
-      force_back = false;
       bool_x[pose_x] = true;
+      forwardInMetersTrapeze(-0.5);
+      pose_x--;
+    }
+    
+    turn_left();
+    delay(300);
+  } 
+
+  else if (pose_x == 2 && bool_x[pose_x - 1] == true) { 
+    pose_x -= 2;
+    turn_left();
+    delay(300);
+    forwardInMetersTrapeze(1.0);
+    turn_right();
+    delay(300);
+  } 
+  else if (pose_x == 0 and bool_x[pose_x + 2] == false) {
+    bool_x[pose_x] = true;
+    pose_x += 2;
+    turn_right();
+    delay(300);
+    forwardInMetersTrapeze(1.0);
+    turn_left();
+    delay(300);
+  }
+  else  {
+    bool_x[pose_x] = true;
+    turn_left();
+    delay(300);
+    forwardInMetersTrapeze(0.5);
+    pose_x--;
+    turn_right();
+    delay(300);
+  }
+  if (pose_y == 11 and pose_x == 0){
+    // tOURNE À droite, avance, tourne a droite moteur max
+    turn_right();
+    delay(300);
+    forwardInMetersTrapeze(0.5);
+    turn_right();
+    delay(300);
+    forwardInMetersTrapeze(5.5);
+    exit(0);
+
+  } 
+
+  else if (pose_y == 11 and pose_x == 2){
+      // Tourne a gauche, avance, tourne a gauche et moteur max
       turn_left();
       delay(300);
       forwardInMetersTrapeze(0.5);
-      pose_x--;
-      turn_right();
+      turn_left();
       delay(300);
+      forwardInMetersTrapeze(5.5);
+      exit(0);
+
+    } 
+    if (pose_y == 5){
+      bool_x[1] = false;
     }
-  }
+}  
 }
+
