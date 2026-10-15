@@ -2,19 +2,18 @@
 
 #include <Arduino.h>
 
-template <int n>
+template<size_t size>
 struct CalibrationProfile
 {
-    float x[n];
-    float y[n];
+    float x[size];
+    float y[size];
 };
 
-template <int n>
-size_t __find_idx(float elements[n], float value)
+size_t __find_idx(const float *elements, size_t size, float value)
 {
     // FIXME: This search algo can be replaced with a btree lookup, if someone 
     // wants to do that. It would become much better with large sets of data.
-    for (auto i = 0; i < n - 1; i++)
+    for (auto i = 0; i < size - 1; i++)
     {
         if (value == elements[i])
         {
@@ -27,11 +26,11 @@ size_t __find_idx(float elements[n], float value)
             return i;
         }
     }
-    return elements[n - 1];
+    return elements[size - 1];
 }
 
-template <int n>
-float lin_interpolate(const CalibrationProfile<n> &profile, float x)
+template<size_t size>
+float lin_interpolate(const CalibrationProfile<size> &profile, float x)
 {
     /* BEGIN error guard */
     // FIXME: these cases are out of bound errors, but no error reporting
@@ -40,13 +39,13 @@ float lin_interpolate(const CalibrationProfile<n> &profile, float x)
     {
         return profile.x[0];
     }
-    if (x > profile.x[n - 1])
+    if (x > profile.x[size - 1])
     {
-        return profile.x[n - 1];
+        return profile.x[size - 1];
     }
     /* END error guard */
 
-    size_t idx = __find_idx(profile.x, x);
+    size_t idx = __find_idx(profile.x, size, x);
     if (profile.x[idx] == x)
     {
         return profile.y[idx];
