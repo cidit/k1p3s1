@@ -166,7 +166,7 @@ void forwardInMetersTrapeze(float meters) {
 
 
 bool check_open(){
-    if (digitalRead(pin_vert) or digitalRead(pin_rouge)){
+    if (digitalRead(pin_vert) and digitalRead(pin_rouge)){
         return true;
     }
     else{
