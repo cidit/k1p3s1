@@ -3,7 +3,7 @@
 #include <stack>
 #include "fonctions.h"
 
-bool started_robot = false;
+bool started_robot = true;
 std::stack<int> retour;
 
 int pose_x = 1;
