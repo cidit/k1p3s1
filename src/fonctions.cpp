@@ -42,7 +42,7 @@ void forwardInMeters(float meters) {
   MOTOR_SetSpeed(1, 0); 
 }
 void rotationPID(float degrees){
-  float offset = 4.45*(degrees/abs(degrees)); // 3b = 5.0 3a = 5.5
+  float offset = 5.0*(degrees/abs(degrees)); // 3b = 5.0 3a = 4.3
   float target = ((degrees+offset)/360.0) * circle * (ticks_per_turn/circumference);
   float kp = 0.002; // 3b = 0.002 3a = 0.003
   float ki = 0.000001;
