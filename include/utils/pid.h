@@ -65,6 +65,12 @@ void pid_clamp_integral(PidContext &ctx, float min, float max)
     }
 }
 
+void pid_reset(PidContext &ctx) {
+    ctx.error_sum = 0;
+    ctx.last_error = 0;
+    ctx.setpoint = 0;
+}
+
 float pid_compute_next(PidContext &ctx, float input, float dt_s)
 {
     auto error = ctx.setpoint - input;
