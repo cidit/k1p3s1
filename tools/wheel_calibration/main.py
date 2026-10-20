@@ -49,17 +49,32 @@ def main():
                 f.writelines(
                     textwrap.dedent(f"""
                         #pragma once
-                        float {file_path.stem}_left_speed[] = {{{left_resampled["speed"].str.join(",")[0]}}};
-                        float {file_path.stem}_left_power[] = {{{left_resampled["power"].str.join(",")[0]}}}
-                        float {file_path.stem}_left_deadzone = {{{left_deadzone[0]}, {left_deadzone[1]}}};
-                        float {file_path.stem}_right_power[] = {{{right_resampled["power"].str.join(",")[0]}}}
-                        float {file_path.stem}_right_speed[] = {{{right_resampled["speed"].str.join(",")[0]}}};
-                        float {file_path.stem}_right_deadzone = {{{right_deadzone[0]}, {right_deadzone[1]}}};
+                        #include <utils/calib.h>
+
+                        float __left_wheel_x[] = {{{left_resampled["speed"].str.join(",")[0]}}};
+                        float __left_wheel_y[] = {{{left_resampled["power"].str.join(",")[0]}}};
+                        float __right_wheel_x[] = {{{right_resampled["speed"].str.join(",")[0]}}};
+                        float __right_wheel_y[] = {{{right_resampled["power"].str.join(",")[0]}}};
+
+                        auto left_wheel = CalibrationProfile {{
+                            .size = {resampling_size},
+                            .x = __left_wheel_x,
+                            .y = __left_wheel_y,
+                            .deadzone = {{{left_deadzone[0]}, {left_deadzone[1]}}},
+                        }};
+                        auto right_wheel = CalibrationProfile {{
+                            .size = {resampling_size},
+                            .x = __right_wheel_x,
+                            .y = __right_wheel_y,
+                            .deadzone = {{{right_deadzone[0]}, {right_deadzone[1]}}},
+                        }};
                     """)
                 )
 
     if args.show:
         fig = px.line(left_resampled, y="power", x="speed")
+        fig.show()
+        fig = px.line(right_resampled, y="power", x="speed")
         fig.show()
 
 
@@ -82,14 +97,14 @@ def resample_calibration(
     negative_resampled = polynomial_resample(
         negative["speed"],
         negative["power"],
-        len(calibration) * num_samples // len(negative),
+         num_samples // 2
     )
 
     positive = calibration.filter(pl.col("speed") > 0)
     positive_resampled = polynomial_resample(
         positive["speed"],
         positive["power"],
-        len(calibration) * num_samples // len(positive),
+        num_samples // 2
     )
 
     deadzone = negative[-1, "speed"], positive[0, "speed"]

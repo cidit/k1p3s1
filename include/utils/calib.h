@@ -1,12 +1,20 @@
 #pragma once
-
 #include <Arduino.h>
 
-template<size_t size>
+/*
+ * // FIXME: This implementation makes bad assumptions. It shouldnt expect a 
+ * deadzone. It should specify it's valid domain. In other words, for a wheel,
+ * there should be one calibration for positive rotation and one for negative
+ * rotation **each**. In this case, it makes particular sense because they are
+ * different actuation types to begin with.
+*/
+
 struct CalibrationProfile
 {
-    float x[size];
-    float y[size];
+    const size_t size;
+    float *x;
+    float *y;
+    float deadzone[2]; // deadzone in the x where y will evaluate to 0
 };
 
 size_t __find_idx(const float *elements, size_t size, float value)
@@ -29,8 +37,7 @@ size_t __find_idx(const float *elements, size_t size, float value)
     return elements[size - 1];
 }
 
-template<size_t size>
-float lin_interpolate(const CalibrationProfile<size> &profile, float x)
+float lin_interpolate(const CalibrationProfile &profile, float x)
 {
     /* BEGIN error guard */
     // FIXME: these cases are out of bound errors, but no error reporting
@@ -39,13 +46,17 @@ float lin_interpolate(const CalibrationProfile<size> &profile, float x)
     {
         return profile.x[0];
     }
-    if (x > profile.x[size - 1])
+    if (x > profile.x[profile.size - 1])
     {
-        return profile.x[size - 1];
+        return profile.x[profile.size - 1];
     }
     /* END error guard */
 
-    size_t idx = __find_idx(profile.x, size, x);
+    if (profile.deadzone[0] < x && x < profile.deadzone[1]) {
+        return 0;
+    }
+
+    size_t idx = __find_idx(profile.x, profile.size, x);
     if (profile.x[idx] == x)
     {
         return profile.y[idx];
