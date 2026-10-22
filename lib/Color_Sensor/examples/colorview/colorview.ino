@@ -4,7 +4,7 @@
 // Pick analog outputs, for the UNO these three work well
 // use ~560  ohm resistor between Red & Blue, ~1K for green (its brighter)
 #define redpin 3
-#define greenpin 5
+#define greenpin 5  
 #define bluepin 6
 // for a common anode LED, connect the common pin to +5V
 // for common cathode, connect the common to ground
@@ -55,18 +55,18 @@ void setup() {
 void loop() {
     uint16_t clear, red, green, blue;
 
-    tcs.setInterrupt(false);      // turn on LED
+        tcs.setInterrupt(false);      // turn on LED
 
-    delay(60);  // takes 50ms to read
+        delay(60);  // takes 50ms to read
 
-    tcs.getRawData(&red, &green, &blue, &clear);
+        tcs.getRawData(&red, &green, &blue, &clear);
 
-    tcs.setInterrupt(true);  // turn off LED
+        tcs.setInterrupt(true);  // turn off LED
 
-    Serial.print("C:\t"); Serial.print(clear);
-    Serial.print("\tR:\t"); Serial.print(red);
-    Serial.print("\tG:\t"); Serial.print(green);
-    Serial.print("\tB:\t"); Serial.print(blue);
+        Serial.print("C:\t"); Serial.print(clear);
+        Serial.print("\tR:\t"); Serial.print(red);
+        Serial.print("\tG:\t"); Serial.print(green);
+        Serial.print("\tB:\t"); Serial.print(blue);
 
     // Figure out some basic hex code for visualization
     uint32_t sum = clear;
