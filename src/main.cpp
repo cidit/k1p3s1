@@ -30,7 +30,7 @@ void setup() {
   }
   delay(2000);
 }
-
+int range = 20;
 void loop() {
   uint16_t clear, red, green, blue;
   tcs.setInterrupt(false);      // turn on LED
@@ -46,8 +46,16 @@ void loop() {
   Serial.print("\tG:\t"); Serial.print(green);
   Serial.print("\tB:\t"); Serial.println(blue);
 
-  if (abs(red - 222) < 30 and abs(green - 305) < 30 and abs(blue - 242) < 30){
+  if (abs(red - 222) < range and abs(green - 305) < range and abs(blue - 242) < range){
     Serial.println("VERT");
+  } else if(abs(red - 160) < range and abs(green - 260) < range and abs(blue - 245) < range){
+    Serial.println("BLEU");
+  } else if(abs(red - 310) < range and abs(green - 350) < range and abs(blue - 200) < range){
+    Serial.println("JAUNE");
+  } else if(abs(red - 310) < range and abs(green - 275) < range and abs(blue - 180) < range){
+    Serial.println("ORANGE");
+  } else if(abs(red - 376) < range and abs(green - 300) < range and abs(blue - 250) < range){
+    Serial.println("ROUGE");
   }
 
   

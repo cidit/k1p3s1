@@ -4,6 +4,8 @@
 #include <Arduino.h>
 #include <LibRobus.h>
 #include <hardware.h>
+#include <Wire.h>
+#include "Adafruit_TCS34725.h"
 
 const int pin_vert = 48;
 const int pin_rouge = 49;
