@@ -6,43 +6,28 @@
 struct TimerContext
 {
     timestamp_t period_ms;
-    timestamp_t last;
+    timestamp_t last_update_ms;
+    timestamp_t last_period_ms;
 };
 
 TimerContext make_timer(timestamp_t period_ms, timestamp_t start_at_ms)
 {
-    return TimerContext{.period_ms = period_ms, .last = start_at_ms};
+    return TimerContext{.period_ms = period_ms, .last_update_ms = start_at_ms, .last_period_ms = start_at_ms};
 }
 
-/**
- * @returns (negative) The time left until the timer triggers again, in milliseconds.
- * 
- *          (positive) The time since the timer has last triggered, in milliseconds.
- */
-int64_t timer_delta(const TimerContext &ctx, timestamp_t now)
+uint64_t timer_delta(const TimerContext &ctx, timestamp_t now)
 {
-    return now - int64_t(ctx.last + ctx.period_ms);
+    return now - ctx.last_update_ms;
 }
 
 bool timer_ready(const TimerContext &ctx, timestamp_t now)
 {
-    return timer_delta(ctx, now) >= 0;
+    return now - int64_t(ctx.last_period_ms + ctx.period_ms) >= 0;
 }
 
 /**
- * @returns (negative) The amount of periods to go before the specified `time`. (I.E. The amount 
- *                     of times the timer is gonna go off before the time is reached.)
- * 
- *          (positive) The amount of periods that have happened since the specified `time`.
- */
-float timer_periods_since(const TimerContext &ctx, timestamp_t time)
-{
-    auto time_elapsed = ctx.last - int64_t(time);
-    return time_elapsed / float(ctx.period_ms);
-}
-
-/**
- * Updates the timer by stepping by whole periods.
+ * Updates the timer by stepping in fixed steps (defined py the timer's period). Useful when precise
+ * timing is important.
  * @note Since this function can invalidate `timer_ready`, it should be called at the
  *       end of the `loop` if `timer_ready` is relied upon within it.
  * @returns the amount of periods elapsed since the last update.
@@ -53,9 +38,10 @@ size_t timer_update_fixed(TimerContext &ctx, timestamp_t now)
     {
         return 0;
     }
-    auto time_since_last = now - ctx.last;
-    auto rollovers = time_since_last / ctx.period_ms;
-    ctx.last += ctx.period_ms * rollovers;
+    auto time_since_last_period = now - ctx.last_period_ms;
+    auto rollovers = time_since_last_period / ctx.period_ms;
+    ctx.last_period_ms += ctx.period_ms * rollovers;
+    ctx.last_update_ms = now;
     return rollovers;
 }
 
@@ -64,5 +50,6 @@ size_t timer_update_fixed(TimerContext &ctx, timestamp_t now)
  */
 void timer_reset(TimerContext &ctx, timestamp_t now)
 {
-    ctx.last = now;
+    ctx.last_update_ms = now;
+    ctx.last_period_ms = now;
 }
