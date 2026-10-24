@@ -1,3 +1,4 @@
+//fonctions.cpp
 #include "fonctions.h"
 #include <LibRobus.h>
 
@@ -233,4 +234,61 @@ bool is_sifflet(int pin_ambiant, int pin_5khz, int patience, float difference_th
     }
     Serial.print("\n");
     return false;
+}
+
+ColoredLED::ColoredLED(int led_pin)
+  : pin(led_pin), time_set(0), is_on(false)
+  {
+  }
+
+void ColoredLED::begin()
+{
+  pinMode(pin, OUTPUT);
+}
+
+void ColoredLED::on()
+{
+  digitalWrite(pin, HIGH);
+  time_set = millis();
+  is_on = true;
+}
+
+void ColoredLED::off()
+{
+  digitalWrite(pin, LOW);
+  is_on = false;
+}
+
+bool ColoredLED::is_time()
+{
+  return is_on and (millis() - time_set > 10 * 1000);
+}
+
+ColoredLED colored_leds[nb_leds] = {
+    ColoredLED(2),
+    ColoredLED(3),
+    ColoredLED(4),
+    ColoredLED(5),
+    ColoredLED(6)
+};
+
+void start_colored_leds(ColoredLED colored_leds[])
+{
+        for (int i = 0; i < nb_leds; i++)
+    {
+        colored_leds[i].begin();
+        colored_leds[i].on();
+        delay(1000);
+    }
+}
+
+void check_colored_leds(ColoredLED colored_leds[])
+{
+    for (int i = 0; i < nb_leds; i++)
+{
+    if (colored_leds[i].is_time())
+    {
+        colored_leds[i].off();
+    }
+}
 }
