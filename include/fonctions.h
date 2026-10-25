@@ -51,6 +51,7 @@ extern ColoredLED colored_leds[nb_leds];
 
 void start_colored_leds(ColoredLED colored_leds[]);
 void check_colored_leds(ColoredLED colored_leds[]);
+
 float average_read(int pin_analog, int sample_size, int sample_time);
 float difference(int pin_ambiant, int pin_5khz, int interval, int sample_size, int sample_time);
 bool is_sifflet(/* EmaContext f_ambiant, EmaContext f_5khz, */int pin_ambiant, int pin_5khz, int patience, float thr, int interval); 

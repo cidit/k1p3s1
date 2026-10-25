@@ -262,11 +262,11 @@ bool ColoredLED::is_time()
 }
 
 ColoredLED colored_leds[nb_leds] = {
-    ColoredLED(2),
-    ColoredLED(3),
-    ColoredLED(4),
-    ColoredLED(5),
-    ColoredLED(6)
+    ColoredLED(22),
+    ColoredLED(24),
+    ColoredLED(26),
+    ColoredLED(28),
+    ColoredLED(30)
 };
 
 void start_colored_leds(ColoredLED colored_leds[])
