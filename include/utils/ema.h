@@ -17,11 +17,10 @@ struct EmaContext
 };
 
 EmaContext make_EMA(
-    timestamp_t period_ms,
-    float time_constant_s)
+    seconds period,
+    seconds time_constant_s)
 {
-    auto period_s = float(period_ms) / 1000;
-    auto alpha = 1 - exp(-period_s / time_constant_s);
+    auto alpha = 1 - exp(-period / time_constant_s);
 
     return (EmaContext){
         .ready = false,
