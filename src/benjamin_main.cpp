@@ -63,11 +63,11 @@ void check_colored_leds(ColoredLED colored_leds[])
 
 
 ColoredLED colored_led[5] = {
-    ColoredLED(2),
-    ColoredLED(3),
-    ColoredLED(4),
-    ColoredLED(5),
-    ColoredLED(6)
+    ColoredLED(22),
+    ColoredLED(24),
+    ColoredLED(26),
+    ColoredLED(28),
+    ColoredLED(30)
 };
 
 void setup()
