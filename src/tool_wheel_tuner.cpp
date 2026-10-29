@@ -28,7 +28,7 @@ RingBuffer<2> right_enco = make_ring_buffer<2>();
 RingBuffer<2> left_enco = make_ring_buffer<2>();
 
 EmaContext right_speed = make_EMA(encoder_sampling.period, .01);
-EmaContext CALIBleft_speed = make_EMA(encoder_sampling.period, .01);
+EmaContext left_speed = make_EMA(encoder_sampling.period, .01);
 
 OdometryContext odometry = make_odometry();
 
