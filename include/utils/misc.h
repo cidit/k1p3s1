@@ -10,7 +10,7 @@ using pin_t = uint8_t;
  * tool like Teleplot. It can be found in the VSCode extenstions marketplace.
  */
 #define GRAPH(item) Serial.println(">" + String(#item) + ':' + String(item) + "|np");
-#define GRAPHT(item) Serial.println(">" + String(#item) + ':' + String(now) + ':' + String(item) + "|np");
+#define GRAPHT(item) Serial.println(">" + String(#item) + ':' + String(millis()) + ':' + String(item) + "|np");
 
 #define PLOT(name, x, y) Serial.println(">" + String(name) + ':' + String(x) + ':' + String(y) + "|xy");
 
@@ -25,10 +25,20 @@ constexpr seconds T_from_Hz(float frequency_hz)
 
 constexpr milliseconds ms_from_s(seconds s)
 {
-    return s * 10e3;
+    return s * 1e3;
 }
 
 constexpr microseconds us_from_s(seconds s)
 {
-    return s * 10e6;
+    return s * 1e6;
+}
+
+constexpr seconds s_from_ms(seconds ms)
+{
+    return ms * 1e-3;
+}
+
+constexpr seconds s_from_us(microseconds us) 
+{ 
+    return us * 1e-6; 
 }
