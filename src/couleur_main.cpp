@@ -4,19 +4,13 @@
 #include <Wire.h>
 #include "Adafruit_TCS34725.h"
 
-bool started_robot = true;
-std::stack<int> retour;
-
 Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS34725_GAIN_4X);
 
 void setup() {
   pinMode(pin_vert, INPUT);
   pinMode(pin_rouge, INPUT);
-  pinMode(pin_ambiant, INPUT);
-  pinMode(pin_5khz, INPUT);
-  Serial.begin(9600);
+  Serial.begin(115200);
   BoardInit();
-  retour.push(pose_x);
   Serial.println("Color View Test!");
   if (tcs.begin()) {
       Serial.println("Found sensor");
@@ -52,5 +46,7 @@ void loop() {
     Serial.println("ORANGE");
   } else if(abs(red - 376) < range and abs(green - 300) < range and abs(blue - 250) < range){
     Serial.println("ROUGE");
+  } else{
+    Serial.println("Unknown color");
   }
 }
