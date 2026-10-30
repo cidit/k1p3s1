@@ -24,19 +24,9 @@ void setup()
 
 void loop()
 {
-  auto now = millis();
+  auto now = micros();
 
-  if (timer_ready(encoder_sampling, now))
-  {
-    auto periods = timer_update_fixed(encoder_sampling, now);
-    for (size_t i = 0; i < periods; i++)
-    {
-      auto right = ENCODER_Read(RIGHT);
-      ring_buffer_append(right_enco, right);
-      auto left = ENCODER_Read(LEFT);
-      ring_buffer_append(left_enco, left);
-    }
-  }
+  
 
   if (timer_ready(graph_timer, now))
   {
