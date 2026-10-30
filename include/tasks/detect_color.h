@@ -56,7 +56,7 @@ enum color
 
 TASK_LOOP(detect_color)
 {
-  int range = 30;
+  int range = 60;
   uint16_t clear, red, green, blue;
   tcs.setInterrupt(false); // turn on LED
 
@@ -75,19 +75,19 @@ TASK_LOOP(detect_color)
     Serial.print("\tB:\t");
     Serial.println(blue);
 
-    if (abs(red - 440) < range and abs(green - 335) < range and abs(blue - 275) < range){
+    if ((red - 410) < range and (green - 305) < range and (blue - 245) < range){
       ctx.couleur = ROSE;
     }
-    else if (abs(red - 375) < range and abs(green - 325) < range and abs(blue - 205) < range){
+    else if ((red - 345) < range and (green - 295) < range and (blue - 175) < range){
       ctx.couleur = ORANGE;
     }
-    else if (abs(red - 395) < range and abs(green - 430) < range and abs(blue - 235) < range){
+    else if ((red - 365) < range and (green - 400) < range and (blue - 205) < range){
       ctx.couleur = JAUNE;
     }
-    else if (abs(red - 295) < range and abs(green - 405) < range and abs(blue - 315) < range){
+    else if ((red - 265) < range and (green - 375) < range and (blue - 285) < range){
       ctx.couleur = VERT;
     }
-    else if (abs(red - 185) < range and abs(green - 305) < range and abs(blue - 285) < range){
+    else if ((red - 155) < range and (green - 275) < range and (blue - 255) < range){
       ctx.couleur = BLEU;
     }
     else{
