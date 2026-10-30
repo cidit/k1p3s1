@@ -4,13 +4,13 @@
 const int pin_IR = 9; 
 const int start_button = 12;
 const int wake_button = 13;
-const int command_led = 6; 
-const int power_led = 7;
+const int command_led = 4; 
+const int power_led = 10;
 
-const uint16_t start_command = 0xC001;
-const uint16_t wake_command = 0xC002;
+const uint16_t start_command = 0x80;
+const uint16_t wake_command = 0x81;
 
-const uint16_t target_address = 0x012B;
+const uint16_t target_address = 0xAA;
 const int repeats = 0;
 
 void setup() {
