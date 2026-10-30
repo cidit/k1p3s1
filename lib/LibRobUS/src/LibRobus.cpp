@@ -254,11 +254,11 @@ String BLUETOOTH_read(){
   return inputString;
 }
 
-uint32_t REMOTE_read(){
+/* uint32_t REMOTE_read(){
   if (__irrecv__.decode(&IR_MSG)) {
     __irrecv__.resume(); // Receive the next value
     // Serial.println(IR_MSG.value);
     return IR_MSG.value;
   }
   return 0;
-};
+}; */

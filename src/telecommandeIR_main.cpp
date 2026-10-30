@@ -1,4 +1,3 @@
-// 1. Crucial fix: Change .h to .hpp to define IrSender
 #include <Arduino.h>
 #include <IRremote.hpp> 
 

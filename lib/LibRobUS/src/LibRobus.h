@@ -17,7 +17,7 @@ General librairies for Robus robot
 #include <SoftTimer/SoftTimer.h>
 
 // Third party libraries
-#include <IRremote/IRremote.h>
+//#include <IRremote/IRremote.h>
 
 
 // Defines
@@ -350,7 +350,7 @@ String BLUETOOTH_read();
 @return code on a uint32_t
 
 */
-uint32_t REMOTE_read();
+//uint32_t REMOTE_read();
 
 /** allow inline printing (c++ style);
 */
