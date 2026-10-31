@@ -46,7 +46,8 @@ void start_colored_leds(ColoredLED colored_leds[])
     {
         colored_leds[i].begin();
         colored_leds[i].on();
-        delay(1000);
+        delay(500);
+        colored_leds[i].off();
     }
 }
 
@@ -63,16 +64,17 @@ void check_colored_leds(ColoredLED colored_leds[])
 
 
 ColoredLED colored_led[5] = {
-    ColoredLED(22),
-    ColoredLED(24),
-    ColoredLED(26),
-    ColoredLED(28),
-    ColoredLED(30)
+    ColoredLED(38),
+    ColoredLED(39),
+    ColoredLED(40),
+    ColoredLED(41),
+    ColoredLED(42)
 };
 
 void setup()
 {
     Serial.begin(115200);
+    BoardInit();
     start_colored_leds(colored_led);
 }
 
@@ -80,4 +82,13 @@ void loop()
 {
 check_colored_leds(colored_led);
 Serial.println(millis());
-} 
+}  
+
+/* #include <Arduino.h>
+#include <LibRobus.h>
+#include "fonctions.h"
+
+void setup()
+{
+    BoardInit();
+} */

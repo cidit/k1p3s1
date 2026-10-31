@@ -262,11 +262,11 @@ bool ColoredLED::is_time()
 }
 
 ColoredLED colored_leds[nb_leds] = {
-    ColoredLED(22),
-    ColoredLED(24),
-    ColoredLED(26),
-    ColoredLED(28),
-    ColoredLED(30)
+    ColoredLED(38),
+    ColoredLED(39),
+    ColoredLED(40),
+    ColoredLED(41),
+    ColoredLED(42)
 };
 
 void start_colored_leds(ColoredLED colored_leds[])
@@ -275,7 +275,8 @@ void start_colored_leds(ColoredLED colored_leds[])
     {
         colored_leds[i].begin();
         colored_leds[i].on();
-        delay(1000);
+        delay(500);
+        colored_leds[i].off();
     }
 }
 
@@ -288,4 +289,41 @@ void check_colored_leds(ColoredLED colored_leds[])
         colored_leds[i].off();
     }
 }
+}
+
+bool robot_start = false;
+bool robot_wake_up = true;
+
+void beep(int times) 
+{
+    for (int i = 0; i < times; i++)
+    {
+        AX_BuzzerON();
+        delay(100);
+        AX_BuzzerOFF();
+        delay(100);
+    }
+}
+
+void IR_control_check() 
+{
+    switch (REMOTE_read()) 
+    {
+        case 0xF70812ED :
+            Serial.println("Start command received");
+            beep(2);
+            robot_start = true;
+            break;
+        case 0x778812ED :
+            Serial.println("Wake command received");
+            beep(3);
+            robot_wake_up = true;
+            break;
+    }
+}
+
+bool can_robot_move()
+{
+    IR_control_check();
+    return robot_start and robot_wake_up;
 }

@@ -1,60 +1,55 @@
 #include <Arduino.h>
 #include <LibRobus.h>
-//#include <IRremote.hpp>
-//#include "fonctions.h"
 
- void setup(){
-    Serial.begin(9600);
+const int ir_receive_pin = 37;
+bool robot_start = false;
+bool robot_wake_up = true;
 
- }
-void loop() 
+void beep(int times) 
 {
-    Serial.println("allo frank");
-    delay(100);
+    for (int i = 0; i < times; i++)
+    {
+        AX_BuzzerON();
+        delay(100);
+        AX_BuzzerOFF();
+        delay(100);
+    }
 }
-    
-/* const int ir_receive_pin = 37;
-const uint16_t target_address = 0x012B;
+
+void IR_control_check() 
+{
+    switch (REMOTE_read()) 
+    {
+        case 0xF70812ED :
+            Serial.println("Start command received");
+            beep(2);
+            robot_start = true;
+            break;
+        case 0x778812ED :
+            Serial.println("Wake command received");
+            beep(3);
+            robot_wake_up = true;
+            break;
+    }
+}
+
+bool can_robot_move()
+{
+    IR_control_check();
+    return robot_start and robot_wake_up;
+}
+
+
+
 
 void setup()
 {
     BoardInit();
-    //IrReceiver.begin(ir_receive_pin, ENABLE_LED_FEEDBACK);
-    pinMode(22,OUTPUT);
-    digitalWrite(22,HIGH);
     Serial.println("Mode lecture");
+    beep(5);
 }
 
 void loop()
 {
-     if (IrReceiver.decode())
-    {
-        Serial.println("Commande recue");
-        if (IrReceiver.decodedIRData.protocol == NEC and
-            IrReceiver.decodedIRData.address == target_address)
-            {
-                Serial.println("Successful read");
-                switch (IrReceiver.decodedIRData.command)
-                {
-                    case 0xC001:
-                        Serial.println("ROBUS start order received");
-                        //Mettre protocole de départ ici
-                    case 0xC002:
-                        Serial.println("ROBUS wake-up order received");
-                        //Metre protocole de réveil ici
-                    default:
-                        Serial.println("Unknown command received: 0x" + String(IrReceiver.decodedIRData.command, HEX));
-                }
-            }
-    } 
-   uint32_t state = REMOTE_read();
-   if (state == 0)
-   {
-    Serial.println(state);
-   } else {
-        Serial.print("Recu : 0x");
-    Serial.println(state, HEX);
-    delay(1000);
-   }
-   
-} */
+    can_robot_move();
+}

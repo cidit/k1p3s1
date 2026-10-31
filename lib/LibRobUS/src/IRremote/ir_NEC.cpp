@@ -25,8 +25,8 @@ void  IRsend::sendNEC (unsigned long data,  int nbits)
 	enableIROut(38);
 
 	// Header
-	mark(NEC_HDR_MARK);
-	space(NEC_HDR_SPACE);
+	mark(NEC_HDR_MARK); //Carrier on
+	space(NEC_HDR_SPACE); //Carrier off
 
 	// Data
 	for (unsigned long  mask = 1UL << (nbits - 1);  mask;  mask >>= 1) {
