@@ -8,20 +8,22 @@
 #include "utils/misc.h"
 #include "LibRobus.h"
 
-TASK_CONTEXT(CALIBRATION){
+#define TASK_TYPE CALIBRATION
+
+TASK_CONTEXT()
+{
     TimerContext timer;
     float step_size;
     int bounces;
     int bounce_idx;
     int bounce_direction;
     float current_power;
-    EmaContext &right_mps;
-    EmaContext &left_mps;
+    EmaContext & right_mps;
+    EmaContext & left_mps;
 };
 
-TASK_INIT(CALIBRATION)(
-    EmaContext &right_mps,
-    EmaContext &left_mps)
+TASK_INIT(EmaContext &right_mps,
+          EmaContext &left_mps)
 {
     return CALIBRATION_context{
         .timer = make_timer(500, 0),
@@ -35,13 +37,13 @@ TASK_INIT(CALIBRATION)(
     };
 }
 
-TASK_SETUP(CALIBRATION)
+TASK_SETUP()
 {
     Serial.println("Characterization started");
     return true;
 }
 
-TASK_LOOP(CALIBRATION)
+TASK_LOOP()
 {
     auto now = millis();
     if (!timer_ready(ctx.timer, now))
@@ -54,7 +56,7 @@ TASK_LOOP(CALIBRATION)
     {
         return false;
     }
-    
+
     GRAPHT(ctx.right_mps.current)
     GRAPHT(ctx.left_mps.current)
     GRAPHT(ctx.current_power)
@@ -78,7 +80,7 @@ TASK_LOOP(CALIBRATION)
     return ctx.bounce_idx == ctx.bounces && abs(ctx.current_power) < 0.001;
 }
 
-TASK_CLEANUP(CALIBRATION)
+TASK_CLEANUP()
 {
     MOTOR_SetSpeed(RIGHT, 0);
     MOTOR_SetSpeed(LEFT, 0);
@@ -86,3 +88,4 @@ TASK_CLEANUP(CALIBRATION)
     return true;
 }
 
+#undef TASK_TYPE

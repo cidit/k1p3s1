@@ -11,14 +11,16 @@
 
 Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS34725_GAIN_4X);
 
-TASK_CONTEXT(detect_color)
+#define TASK_TYPE detect_color
+
+TASK_CONTEXT()
 {
   TimerContext timer;
   int &couleur;
   uint16_t &red, &green, &blue;
 };
 
-TASK_INIT(detect_color)(int &couleur, uint16_t &red, uint16_t &green, uint16_t &blue)
+TASK_INIT(int &couleur, uint16_t &red, uint16_t &green, uint16_t &blue)
 {
   return (detect_color_context){
     .timer = make_timer(us_from_s(1), 0),
@@ -28,7 +30,7 @@ TASK_INIT(detect_color)(int &couleur, uint16_t &red, uint16_t &green, uint16_t &
     .blue = blue};
 }
 
-TASK_SETUP(detect_color)
+TASK_SETUP()
 {
   Serial.println("Color View Test!");
   if (tcs.begin())
@@ -54,7 +56,7 @@ enum color
   BLEU
 };
 
-TASK_LOOP(detect_color)
+TASK_LOOP()
 {
   int range = 60;
   uint16_t clear, red, green, blue;
@@ -99,8 +101,10 @@ TASK_LOOP(detect_color)
   return false;
 }
 
-TASK_CLEANUP(detect_color)
+TASK_CLEANUP()
 {
   // nothing to do
   return false;
 }
+
+#undef TASK_TYPE

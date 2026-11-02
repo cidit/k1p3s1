@@ -7,11 +7,14 @@
 #include "utils/ema.h"
 #include "utils/ring_buffer.h"
 #include "utils/misc.h"
+#include "odometry2wheels.h"
 #include "LibRobus.h"
 #include <drive.h>
 #include <hardware.h>
 
-TASK_CONTEXT(TRACK_SPEED)
+#define TASK_TYPE TRACK_SPEED
+
+TASK_CONTEXT()
 {
     TimerContext & polling_timer;
     RingBuffer<2> &encoder_positions_right;
@@ -21,7 +24,7 @@ TASK_CONTEXT(TRACK_SPEED)
     OdometryContext & odometry;
 };
 
-TASK_INIT(TRACK_SPEED)(
+TASK_INIT(
     TimerContext &polling_timer,
     RingBuffer<2> &encoder_positions_right,
     RingBuffer<2> &encoder_positions_left,
@@ -38,13 +41,13 @@ TASK_INIT(TRACK_SPEED)(
         .odometry = odometry};
 }
 
-TASK_SETUP(TRACK_SPEED)
+TASK_SETUP()
 {
     // no setup required
     return true;
 }
 
-TASK_LOOP(TRACK_SPEED)
+TASK_LOOP()
 {
     auto now = micros();
     if (!timer_ready(ctx.polling_timer, now))
@@ -86,8 +89,10 @@ TASK_LOOP(TRACK_SPEED)
     return false;
 }
 
-TASK_CLEANUP(TRACK_SPEED)
+TASK_CLEANUP()
 {
     // no cleanup required
     return true;
 }
+
+#undef TASK_TYPE
