@@ -1,12 +1,13 @@
 #include <Arduino.h>
 #include "utils/timer.h"
 #include "utils/ema.h"
+#include "utils/misc.h"
 
 TimerContext ema_timer = make_timer(10, 0);
 TimerContext graph_timer = make_timer(500, 0);
 
-EmaContext ambiant_ema = make_EMA(ema_timer.period_ms, 1);
-EmaContext f5kHz_ema = make_EMA(ema_timer.period_ms, 1);
+EmaContext ambiant_ema = make_EMA(s_from_us(ema_timer.period), 1);
+EmaContext f5kHz_ema = make_EMA(s_from_us(ema_timer.period), 1);
 
 
 void setup() 

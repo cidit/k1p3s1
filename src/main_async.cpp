@@ -38,14 +38,14 @@ void loop()
           WHEEL_TICK_PER_TURN,
           WHEEL_DIAMETER,
           ring_buffer_read_nth(right_enco, 1) - ring_buffer_read_nth(right_enco, 0));
-      auto r_mps = r_delta_mm / encoder_sampling.period_ms; // mm/ms = m/s
+      auto r_mps = r_delta_mm / (encoder_sampling.period*1000); // mm/ms = m/s
 
       GRAPH(r_mps)
       auto l_delta_mm = ticks_to_mm(
           WHEEL_TICK_PER_TURN,
           WHEEL_DIAMETER,
           ring_buffer_read_nth(left_enco, 1) - ring_buffer_read_nth(left_enco, 0));
-      auto l_mps = l_delta_mm / encoder_sampling.period_ms; // mm/ms = m/s
+      auto l_mps = l_delta_mm / (encoder_sampling.period*1000); // mm/ms = m/s
       GRAPH(l_mps)
       GRAPH(r_mps/l_mps)
 
