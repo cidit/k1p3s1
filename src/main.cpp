@@ -4,7 +4,8 @@
 #include <utils/misc.h>
 
 const int pin_detect_proxim_av = A0;
-const int cote = A7;
+const int cote = A5;
+
 int attack_angle = 0;
 int bowling_states = 0;
 int wall_states = 0;
@@ -17,7 +18,7 @@ void setup() {
 
     Serial.println("BOOTING MEGA");
 
-    BoardInit();
+    // BoardInit();
 
     pinMode(pin_detect_proxim_av, INPUT);
     pinMode(cote, INPUT);
@@ -158,8 +159,36 @@ void back_to_line(){
 } */
 
 void loop(){
-  GRAPH(analogRead(pin_detect_proxim_av)); 
-  GRAPH(distance(pin_detect_proxim_av));
-  GRAPH(analogRead(cote));
-  GRAPH(distance(cote));
+  GRAPH(analogRead(A0)); 
+  GRAPH(distance(A0));
+  GRAPH(analogRead(A1));
+  GRAPH(distance(A1));
+  GRAPH(analogRead(A2));
+  GRAPH(distance(A2));
+  GRAPH(analogRead(A3));
+  GRAPH(distance(A3));
+  GRAPH(analogRead(A4));
+  GRAPH(distance(A4));
+  GRAPH(analogRead(A5));
+  GRAPH(distance(A5));
+  GRAPH(analogRead(A6));
+  GRAPH(distance(A6));
+  GRAPH(analogRead(A7));
+  GRAPH(distance(A7));
+  GRAPH(analogRead(A8));
+  GRAPH(distance(A8));
+  GRAPH(analogRead(A9)); 
+  GRAPH(distance(A9));
+  GRAPH(analogRead(A10));
+  GRAPH(distance(A10));
+  GRAPH(analogRead(A11));
+  GRAPH(distance(A11));
+  GRAPH(analogRead(A12));
+  GRAPH(distance(A12));
+  GRAPH(analogRead(A13));
+  GRAPH(distance(A13));
+  GRAPH(analogRead(A14));
+  GRAPH(distance(A14));
+  GRAPH(analogRead(A15));
+  GRAPH(distance(A15));
 }
