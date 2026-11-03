@@ -16,8 +16,8 @@ const float circle = dist_roue*3.1416; // m
 const float ticks_per_turn = 3200.0; //ticks
 const int ir_receive_in = 37;
 
-bool robot_start = false;
-bool robot_wake_up = true;
+//bool robot_start = false;
+//bool robot_wake_up = true;
 
 void forwardcorrection(float speed);
 

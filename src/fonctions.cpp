@@ -2,7 +2,7 @@
 #include "fonctions.h"
 #include <LibRobus.h>
 
-void forward_correction(float baseSpeed)
+void forwardcorrection(float baseSpeed)
 {
     static int32_t previous_count0 = 0;
     static int32_t previous_count1 = 0;
