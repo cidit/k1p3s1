@@ -8,13 +8,38 @@ Class to interface some of the ArduinoX "on board" functionnalities
 #include "Robus.h"
 
 void Robus::init(){
-  for(uint8_t i = 0; i < 4; i++){
-    pinMode(BUMPER_PIN[i], INPUT);
-  }
-  for(uint8_t id = 0; id < 2; id++){
-    enableServo(id);
-    __sonar__[id].init(__SONAR_ECHO_PINS__[id], __SONAR_TRIG_PINS__[id]);
-  }
+
+    Serial.println("Robus: Starting");
+
+    for(uint8_t i = 0; i < 4; i++){
+        Serial.print("Bumper ");
+        Serial.println(i);
+        pinMode(BUMPER_PIN[i], INPUT);
+    }
+
+    Serial.println("Robus: Bumpers OK");
+
+    for(uint8_t id = 0; id < 2; id++){
+
+        Serial.print("Servo ");
+        Serial.println(id);
+
+        enableServo(id);
+
+        Serial.print("Sonar ");
+        Serial.println(id);
+
+        __sonar__[id].init(
+            __SONAR_ECHO_PINS__[id],
+            __SONAR_TRIG_PINS__[id]
+        );
+
+        Serial.print("Sonar ");
+        Serial.print(id);
+        Serial.println(" OK");
+    }
+
+    Serial.println("Robus: Finished");
 }
 
 bool Robus::isBumper(uint8_t id){

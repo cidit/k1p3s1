@@ -8,14 +8,19 @@ Class to interface some of the ArduinoX "on board" functionnalities
 #include "ArduinoX.h"
 
 void ArduinoX::init(){
-  pinMode(BUZZER_PIN, OUTPUT);
-  digitalWrite(BUZZER_PIN, LOW);
-  pinMode(LOWBAT_PIN, INPUT);
-  ina219.begin();
-  for(uint8_t id = 0; id < 2; id++){
-    __motor__[id].init(MOTOR_PWM_PIN[id], MOTOR_DIR_PIN[id]);
-    __encoder__[id].init(COUNTER_SLAVE_PIN[id], COUNTER_FLAG_PIN[id]);
-  }
+
+    pinMode(BUZZER_PIN, OUTPUT);
+    digitalWrite(BUZZER_PIN, LOW);
+    pinMode(LOWBAT_PIN, INPUT);
+    ina219.begin();
+    for(uint8_t id = 0; id < 2; id++){
+        Serial.print("Motor ");
+        Serial.println(id);
+        __motor__[id].init(MOTOR_PWM_PIN[id], MOTOR_DIR_PIN[id]);
+        Serial.print("Encoder ");
+        Serial.println(id);
+        __encoder__[id].init(COUNTER_SLAVE_PIN[id], COUNTER_FLAG_PIN[id]);
+    }
 }
 
 void ArduinoX::buzzerOn(){

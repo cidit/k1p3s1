@@ -24,19 +24,24 @@ Class to interface some of the ArduinoX "on board" functionnalities
 
 
 void BoardInit(){
-  // Initialize debug communication on Serial0
-  Serial.begin(BAUD_RATE_SERIAL0);
-  Serial.println("1: serial ok"); Serial.flush();
-  // Init ArduinoX
-  __AX__.init();
-  Serial.println("2: AX ok"); Serial.flush();
-  // Init Robus
-  __Robus__.init();
-  Serial.println("3: Robus ok"); Serial.flush();
-  // init telecommande
-  __irrecv__.enableIRIn(); // Start the receiver
-    Serial.println("4: IR ok"); Serial.flush();
-};
+
+    Serial.begin(9600);
+    delay(500);
+
+    Serial.println("1: serial ok");
+
+    Serial.println("Starting AX init...");
+    __AX__.init();
+    Serial.println("AX init finished!");
+
+    Serial.println("2: AX ok");
+
+    __Robus__.init();
+    Serial.println("3: Robus ok");
+
+    __irrecv__.enableIRIn();
+    Serial.println("4: IR ok");
+}
 
 void AudioInit(){
   __audio__.init(SerialAudio);

@@ -19,7 +19,7 @@ const int ir_receive_in = 37;
 bool robot_start = false;
 bool robot_wake_up = true;
 
-void forwardInMeters(float meters);
+void forwardcorrection(float speed);
 
 void rotationPID(float degrees);
 void finalDance(float degrees);

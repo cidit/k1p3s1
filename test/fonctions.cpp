@@ -2,45 +2,28 @@
 #include "fonctions.h"
 #include <LibRobus.h>
 
+void forward_correction(float baseSpeed)
+{
+    static int32_t previous_count0 = 0;
+    static int32_t previous_count1 = 0;
 
-void forwardInMeters(float meters) {
-  float offset = 0.0;
-  float target = ((meters+offset) / circumference) * ticks_per_turn;
+    float kp_correction = 0.005;
 
-  float kp = 0.00006;
-  float ki = 0.00000001;
-  float kp_correction = 0.005; 
+    int32_t count0 = ENCODER_Read(0);
+    int32_t count1 = ENCODER_Read(1);
 
-  float accumulated_error0 = 0.0;
-  float accumulated_error1 = 0.0;
-  
+    int32_t delta0 = count0 - previous_count0;
+    int32_t delta1 = count1 - previous_count1;
 
-  ENCODER_Reset(0);
-  ENCODER_Reset(1);
+    previous_count0 = count0;
+    previous_count1 = count1;
 
-  while (abs(target - ENCODER_Read(0)) > 10 or abs(target - ENCODER_Read(1)) > 10) {
-    int32_t count_0 = ENCODER_Read(0);
-    int32_t count_1 = ENCODER_Read(1);
+    float diff = (float)(delta0 - delta1);
 
-    float error0 = target - count_0;
-    float error1 = target - count_1;
-
-    float speed0 = (error0 * kp) + (accumulated_error0 * ki);
-    float speed1 = (error1 * kp) + (accumulated_error1 * ki);
-
-    float diff = (float)(count_0 - count_1);
     float correction = diff * kp_correction;
 
-    MOTOR_SetSpeed(0, speed0 - correction);
-    MOTOR_SetSpeed(1, speed1 + correction);
-
-    accumulated_error0 += error0;
-    accumulated_error1 += error1;
-
-  }
-
-  MOTOR_SetSpeed(0, 0);
-  MOTOR_SetSpeed(1, 0); 
+    MOTOR_SetSpeed(0, baseSpeed - correction);
+    MOTOR_SetSpeed(1, baseSpeed + correction);
 }
 void rotationPID(float degrees){
   float offset = 5.0*(degrees/abs(degrees)); // 3b = 5.0 3a = 4.3
