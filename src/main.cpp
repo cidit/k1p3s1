@@ -3,7 +3,7 @@
 #include <fonctions.h>
 #include <utils/misc.h>
 
-const int pin_detect_proxim_av = A1;
+const int pin_detect_proxim_av = A0;
 const int cote = A7;
 int attack_angle = 0;
 int bowling_states = 0;
@@ -160,6 +160,6 @@ void back_to_line(){
 void loop(){
   GRAPH(analogRead(pin_detect_proxim_av)); 
   GRAPH(distance(pin_detect_proxim_av));
-  GRAPH(analogRead(pin_detect_proxim_cote));
-  GRAPH(distance(pin_detect_proxim_cote));
+  GRAPH(analogRead(cote));
+  GRAPH(distance(cote));
 }
