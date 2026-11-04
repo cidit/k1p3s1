@@ -4,27 +4,27 @@
 
 #define TASK_TYPE IDLE
 
-TASK_CONTEXT() {
+TASK_CONTEXT(){};
 
-};
-
-TASK_INIT() {
-    return (IDLE_context) {};
+TASK_INIT()
+{
+    return (TASK_ctx){};
 }
 
-TASK_SETUP() {
+TASK_SETUP()
+{
     // nothing to do
     return true;
 }
 
-
-TASK_LOOP() {
+TASK_LOOP()
+{
     // nothing to do
     return true;
 }
 
-
-TASK_CLEANUP() {
+TASK_CLEANUP()
+{
     // nothing to do
     return true;
 }
