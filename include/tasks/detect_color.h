@@ -23,7 +23,7 @@ TASK_CONTEXT()
 TASK_INIT(int &couleur, uint16_t &red, uint16_t &green, uint16_t &blue)
 {
   return (detect_color_context){
-    .timer = make_timer(us_from_s(1), 0),
+    .timer = make_timer(us_from_s(0.1), 0),
     .couleur = couleur,
     .red = red,
     .green = green,
@@ -70,12 +70,12 @@ TASK_LOOP()
 
     tcs.setInterrupt(true); // turn off LED
 
-    Serial.print("R:\t");
+    /*Serial.print("R:\t");
     Serial.print(red);
     Serial.print("\tG:\t");
     Serial.print(green);
     Serial.print("\tB:\t");
-    Serial.println(blue);
+    Serial.println(blue);*/
 
     if ((red - 410) < range and (green - 305) < range and (blue - 245) < range){
       ctx.couleur = ROSE;

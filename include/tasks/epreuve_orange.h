@@ -24,6 +24,7 @@ TASK_INIT()
 TASK_SETUP()
 {
   //setup
+  Serial.print("Épreuve orange en cours");
   return true;
 }
 

@@ -25,11 +25,11 @@ void setup()
   BoardInit();
   Serial.begin(115200);
   detect_color_TASK.setup(detect_color_TASK.context);
-  epreuve_rose_TASK.setup(epreuve_rose_TASK.context);
-  epreuve_orange_TASK.setup(epreuve_orange_TASK.context);
-  epreuve_jaune_TASK.setup(epreuve_jaune_TASK.context);
-  epreuve_verte_TASK.setup(epreuve_verte_TASK.context);
-  epreuve_bleue_TASK.setup(epreuve_bleue_TASK.context);
+  epreuve_rose_TASK.state = DONE;
+  epreuve_orange_TASK.state = DONE;
+  epreuve_jaune_TASK.state = DONE;
+  epreuve_verte_TASK.state = DONE;
+  epreuve_bleue_TASK.state = DONE;
 }
 
 void loop()

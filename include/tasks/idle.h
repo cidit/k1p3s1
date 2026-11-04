@@ -14,19 +14,19 @@ TASK_INIT() {
 
 TASK_SETUP() {
     // nothing to do
-    return false;
+    return true;
 }
 
 
 TASK_LOOP() {
     // nothing to do
-    return false;
+    return true;
 }
 
 
 TASK_CLEANUP() {
     // nothing to do
-    return false;
+    return true;
 }
 
 #undef TASK_TYPE
