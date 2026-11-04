@@ -30,14 +30,17 @@ float distance(int pin_index){
   int value = analogRead(pin_index);
 
   if (value <= 0) {
-    return 1000;
+    return -1;
   }
   float voltage = value * (5.0 / 1023.0);
   return 27.86 * pow(voltage, -1.15);
 }
 
 bool is_distance_greater_than(int x, int pin_index){
-  return x <= distance(pin_index);
+  if (x != -1){
+    return x <= distance(pin_index);
+  }
+  return true;
 }
 
 // FUNCTIONS FOR THE BOWLING PIN
@@ -111,11 +114,11 @@ void through_the_wall(){
 void back_to_line(){
   forwardcorrection(speed);
   // if see line
-  // Function to go forward half a robot of distance (so the middle of the robot is in the middle of the line);
-  // Function to go 90 degrees to the left (or until the line is found again);
+  forwardInMetersTrapeze(-0.15);
+  turn_left();
 }
 
-/*void loop() {
+void loop() {
   switch (main_state){
     case 0:
       Serial.print("Idle");
@@ -156,39 +159,5 @@ void back_to_line(){
       break;
   }
 
-} */
-
-void loop(){
-  GRAPH(analogRead(A0)); 
-  GRAPH(distance(A0));
-  GRAPH(analogRead(A1));
-  GRAPH(distance(A1));
-  GRAPH(analogRead(A2));
-  GRAPH(distance(A2));
-  GRAPH(analogRead(A3));
-  GRAPH(distance(A3));
-  GRAPH(analogRead(A4));
-  GRAPH(distance(A4));
-  GRAPH(analogRead(A5));
-  GRAPH(distance(A5));
-  GRAPH(analogRead(A6));
-  GRAPH(distance(A6));
-  GRAPH(analogRead(A7));
-  GRAPH(distance(A7));
-  GRAPH(analogRead(A8));
-  GRAPH(distance(A8));
-  GRAPH(analogRead(A9)); 
-  GRAPH(distance(A9));
-  GRAPH(analogRead(A10));
-  GRAPH(distance(A10));
-  GRAPH(analogRead(A11));
-  GRAPH(distance(A11));
-  GRAPH(analogRead(A12));
-  GRAPH(distance(A12));
-  GRAPH(analogRead(A13));
-  GRAPH(distance(A13));
-  GRAPH(analogRead(A14));
-  GRAPH(distance(A14));
-  GRAPH(analogRead(A15));
-  GRAPH(distance(A15));
 }
+
