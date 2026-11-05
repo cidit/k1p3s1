@@ -58,7 +58,7 @@ void rotationPID(float degrees){
   float previous_error1 = target + ENCODER_Read(1);
   
   
-  while (abs(target - ENCODER_Read(0)) > 30 or abs(target + ENCODER_Read(1)) > 30){
+  while (abs(target - ENCODER_Read(0)) > 100 or abs(target + ENCODER_Read(1)) > 100){
 
   float error0 = target - ENCODER_Read(0);
   float error1 = target + ENCODER_Read(1);
@@ -181,3 +181,95 @@ float distance(int pin_index){
   return 27.86 * pow(voltage, -1.15);
 }
 
+void pincer(){
+  servo_pince.write(100);
+  delay(2000);
+  servo_up.write(80);
+  delay(2000);
+}
+
+void lacher(){
+  servo_up.write(120);
+  delay(2000);
+  servo_pince.write(170);
+  delay(2000);
+}
+
+void verre(){
+  EmaContext moving_avg = make_EMA(T_from_Hz(100), 0.1);
+  int treshold = 200;
+  unsigned long last_sample_time = 0;
+  MOTOR_SetSpeed(0, 0.1);
+  MOTOR_SetSpeed(1, -0.1);
+  bool exit = false;
+
+  while(exit == false) {
+    if (millis() - last_sample_time >= 10) {
+      last_sample_time = millis();
+      EMA_add(moving_avg, ROBUS_ReadIR(1)); //////////////analogRead(pin)
+      GRAPH(moving_avg.current);
+    }
+
+    if (moving_avg.current > treshold) {
+      MOTOR_SetSpeed(0, 0);
+      MOTOR_SetSpeed(1, 0);
+      
+      uint16_t tick_turn = (abs(ENCODER_Read(0)) + abs(ENCODER_Read(1))) / 2;
+      Serial.println("Dedans ! ");
+      delay(1000);
+      Serial.println("Tourne");
+      rotationPID(170); 
+      forwardInMetersTrapeze(0.4, 1);
+      Serial.println("fin");
+      delay(250); 
+      pincer();
+      delay(250); 
+      
+      forwardInMetersTrapeze(0.4, -1);
+
+      float degrees = (int)((float)tick_turn / (ticks_per_turn / circumference) * 360.0) % 360; 
+      Serial.println(degrees);
+      rotationPID(-degrees); 
+      lacher();
+      exit = true;
+    }
+  } 
+}
+
+void quille(){
+  MOTOR_SetSpeed(0, 0.2);
+  MOTOR_SetSpeed(1, -0.2);
+  int treshold = 200;
+  unsigned long last_sample_time = 0;
+  EmaContext moving_avg = make_EMA(T_from_Hz(100), 0.1);
+
+  while(true){
+
+  
+    if (millis() - last_sample_time >= 10) {
+      last_sample_time = millis();
+      EMA_add(moving_avg, ROBUS_ReadIR(1)); //////////////analogRead(pin)
+      GRAPH(moving_avg.current);
+      
+    }
+
+    if (moving_avg.current > treshold) {
+      MOTOR_SetSpeed(0, 0);
+      MOTOR_SetSpeed(1, 0);
+      
+      uint16_t tick_turn = (abs(ENCODER_Read(0)) + abs(ENCODER_Read(1))) / 2;
+      Serial.println("Dedans ! ");
+      delay(500);
+      
+      forwardInMetersTrapeze(0.4, -1);
+      delay(250); 
+
+      
+      forwardInMetersTrapeze(0.4, 1);
+
+      float degrees = int((float)tick_turn / (ticks_per_turn / circumference) * 360.0) % 360 ; 
+      Serial.println(degrees);
+      rotationPID(-degrees); 
+    }  
+  }
+}
