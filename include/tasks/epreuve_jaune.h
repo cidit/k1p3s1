@@ -15,14 +15,15 @@
 
 TASK_CONTEXT()
 {
-  //Mettre les variables qui seront réutilisées dans le main
+  bool &yellow;
 };
 
-TASK_INIT()
+TASK_INIT(bool &yellow)
 {
   pinMode(pin_detect_proxim_av, INPUT);
   pinMode(cote, INPUT);
   return (epreuve_jaune_context){
+    .yellow = yellow
 };
 }
 
@@ -39,7 +40,7 @@ TASK_LOOP()
 
 TASK_CLEANUP()
 {
-  // nothing to do
+  yellow_done = true;
   return false;
 }
 

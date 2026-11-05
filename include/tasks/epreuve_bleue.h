@@ -35,7 +35,7 @@ TASK_LOOP()
 
 TASK_CLEANUP()
 {
-  // nothing to do
+  blue_done = true;
   return false;
 }
 
