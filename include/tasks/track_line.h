@@ -40,8 +40,7 @@ TASK_LOOP()
     {
         return false;
     }
-    Serial.println("doin");
-
+    
     timer_reset(ctx.timer, now);
 
     int raw[LEN] = {0};

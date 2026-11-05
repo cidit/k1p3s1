@@ -152,8 +152,8 @@ void loop()
   auto distribution_ = distribution(follower_vals, follower_pins_len);
 
   auto base_speed = 0.15;
-  motor_set_speed(drive.left, -(base_speed - distribution_ / 4));
-  motor_set_speed(drive.right, -(base_speed + distribution_ / 4));
+  // motor_set_speed(drive.left, -(base_speed - distribution_ / 4));
+  // motor_set_speed(drive.right, -(base_speed + distribution_ / 4));
 
   /* ===== LANCEMENT DES EPREUVES ==== */
 
@@ -191,10 +191,10 @@ void loop()
     }
   }
 
-  /* ===== PRINTIIGNT SECTION ==== */
+  /* ===== PRINTIGNT SECTION ==== */
 
   auto now = micros();
-  if (timer_ready(graph_timer, now) && true)
+  if (timer_ready(graph_timer, now) && false)
   {
     timer_reset(graph_timer, now);
 
