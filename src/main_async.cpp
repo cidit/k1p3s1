@@ -7,6 +7,7 @@
 #include "utils/pid.h"
 #include "utils/ema.h"
 #include "utils/task.h"
+#include "utils/recepteurIR.h"
 #include "utils/colored_leds.h"
 
 #include "hardware.h"
@@ -18,6 +19,7 @@
 #include "tasks/track_line.h"
 #include "tasks/track_speed.h"
 #include "tasks/update_drive.h"
+#include "tasks/check_tasks.h"
 #include "tasks/detect_color.h"
 #include "tasks/epreuve_rose.h"
 #include "tasks/epreuve_orange.h"
@@ -57,8 +59,6 @@ bool pink_done = false;
 bool yellow_done = false;
 bool green_done = false;
 bool orange_done = false;
-
-bool robot_reveil = false;
 
 bool we_re_at_hole = false;
 
@@ -109,7 +109,7 @@ MAKE_TASK(epreuve_rose, pink_done)     // TODO: MISSING DONE PARAMS
 MAKE_TASK(epreuve_orange, orange_done) // TODO: MISSING DONE PARAMS
 MAKE_TASK(epreuve_jaune, yellow_done)
 MAKE_TASK(epreuve_verte, green_done)
-MAKE_TASK(epreuve_bleue, blue_done, robot_reveil)
+MAKE_TASK(epreuve_bleue, blue_done, _robot_wake_up)
 MAKE_TASK(CHECK_COLORS_DONE, blue_done, pink_done, yellow_done, green_done, orange_done)
 
 Task *background_tasks[] = {
@@ -146,6 +146,16 @@ void setup()
 
 void loop()
 {
+
+  /*
+  // TODO: @Benjamin, figure this out
+  while (!_robot_start)
+  {
+    if(IR_start_check()) {
+      _robot_start = true;
+    }
+  }
+  
   while (!robot_depart)
   {
     if (IR_start_check)
@@ -154,22 +164,10 @@ void loop()
       robot_depart = true;
     }
   }
+  
   check_colored_leds(Mycolored_leds);
-
-  /* ===== TASK RUNNING ===== */
-
-  for (auto task : background_tasks)
-  {
-    task_run(*task);
-  }
-  if (current_task->state != DONE)
-  {
-    task_run(*current_task);
-  }
-  else
-  {
-    current_task = &IDLE_TASK;
-  }
+  */
+  
 
   /* ===== LINE FOLLOWER ===== */
 
@@ -189,17 +187,16 @@ void loop()
   auto base_speed = 0.15;
   if (we_re_at_hole)
   {
-    motor_set_speed(drive.left, base_speed);
-    motor_set_speed(drive.right, base_speed);
+    motor_set_speed(drive.left, -base_speed);
+    motor_set_speed(drive.right, -base_speed);
   }
   else
   {
-    motor_set_speed(drive.left, -(base_speed - distribution_ / 4));
-    motor_set_speed(drive.right, -(base_speed + distribution_ / 4));
+    motor_set_speed(drive.left, -(base_speed - distribution_ / 6));
+    motor_set_speed(drive.right, -(base_speed + distribution_ / 6));
   }
 
   /* ===== LANCEMENT DES EPREUVES ==== */
-
   
   if (current_task->state == DONE)
   {
@@ -233,6 +230,21 @@ void loop()
       epreuve_bleue_TASK.state = SETUP;
       current_task = &epreuve_bleue_TASK;
     }
+  }
+
+  /* ===== TASK RUNNING ===== */
+
+  for (auto task : background_tasks)
+  {
+    task_run(*task);
+  }
+  if (current_task->state != DONE)
+  {
+    task_run(*current_task);
+  }
+  else
+  {
+    current_task = &IDLE_TASK;
   }
 
   /* ===== PRINTIIGNT SECTION ==== */

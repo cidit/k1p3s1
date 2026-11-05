@@ -13,7 +13,7 @@ const float circumference = 0.24; // m
 const float dist_roue = (WHEEL_DISTANCE_OUTER - WHEEL_THICKNESS) / 1000.0; // m
 const float circle = dist_roue*3.1416; // m
 const float ticks_per_turn = 3200.0; //ticks
-const int _ir_receive_in = 37;
+// const int _ir_receive_in = 37;
 
 extern bool _robot_start;
 extern bool _robot_wake_up;
@@ -33,22 +33,6 @@ void forwardInMetersTrapeze(float meters);
 float difference_read(int pin_ambiant, int pin_5khz, int interval, int sample_size, int sample_time);
 bool is_sifflet(int pin_ambiant, int pin_5khz, int patience, float integral_thr);
 
-enum {rouge, orange, jaune, vert, bleu, nb_leds};
-
-struct ColoredLED
-{
-    int pin;
-    unsigned long time_set;
-    bool is_on;
-
-    ColoredLED(int led_pin);
-
-    void begin();
-    void on();
-    void off();
-    bool is_time();
-};
-
 extern ColoredLED colored_leds[nb_leds];
 
 void start_colored_leds(ColoredLED colored_leds[]);
@@ -59,9 +43,9 @@ float difference(int pin_ambiant, int pin_5khz, int interval, int sample_size, i
 bool is_sifflet(/* EmaContext f_ambiant, EmaContext f_5khz, */int pin_ambiant, int pin_5khz, int patience, float thr, int interval); 
 void reset_bool(bool bool_x[]);
 
-void beep(int times);
-void IR_control_check();
-bool can_robot_move();
+// void beep(int times);
+// void IR_control_check();
+// bool can_robot_move();
 
 bool find_the_wall(float speed,int pin);
 
@@ -345,35 +329,6 @@ bool is_sifflet(/* EmaContext f_ambiant, EmaContext f_5khz, */ int pin_ambiant, 
   // Serial.println("false");
   return false;
 }
-
-ColoredLED::ColoredLED(int led_pin)
-    : pin(led_pin), time_set(0), is_on(false)
-{
-}
-
-void ColoredLED::begin()
-{
-  pinMode(pin, OUTPUT);
-}
-
-void ColoredLED::on()
-{
-  digitalWrite(pin, HIGH);
-  time_set = millis();
-  is_on = true;
-}
-
-void ColoredLED::off()
-{
-  digitalWrite(pin, LOW);
-  is_on = false;
-}
-
-bool ColoredLED::is_time()
-{
-  return is_on and (millis() - time_set > 10 * 1000);
-}
-
 ColoredLED colored_leds[nb_leds] = {
     ColoredLED(38),
     ColoredLED(39),
@@ -381,51 +336,29 @@ ColoredLED colored_leds[nb_leds] = {
     ColoredLED(41),
     ColoredLED(42)};
 
-void start_colored_leds(ColoredLED colored_leds[])
-{
-  for (int i = 0; i < nb_leds; i++)
-  {
-    colored_leds[i].begin();
-    colored_leds[i].on();
-    delay(500);
-    colored_leds[i].off();
-  }
-}
 
-void check_colored_leds(ColoredLED colored_leds[])
-{
-  for (int i = 0; i < nb_leds; i++)
-  {
-    if (colored_leds[i].is_time())
-    {
-      colored_leds[i].off();
-    }
-  }
-}
+// void IR_control_check()
+// {
+//   switch (REMOTE_read())
+//   {
+//   case 0xF70812ED:
+//     Serial.println("Start command received");
+//     beep(2);
+//     _robot_start = true;
+//     break;
+//   case 0x778812ED:
+//     Serial.println("Wake command received");
+//     beep(3);
+//     _robot_wake_up = true;
+//     break;
+//   }
+// }
 
-
-void IR_control_check()
-{
-  switch (REMOTE_read())
-  {
-  case 0xF70812ED:
-    Serial.println("Start command received");
-    beep(2);
-    _robot_start = true;
-    break;
-  case 0x778812ED:
-    Serial.println("Wake command received");
-    beep(3);
-    _robot_wake_up = true;
-    break;
-  }
-}
-
-bool can_robot_move()
-{
-  IR_control_check();
-  return _robot_start and _robot_wake_up;
-}
+// bool can_robot_move()
+// {
+//   IR_control_check();
+//   return _robot_start and _robot_wake_up;
+// }
 
 void raph_rotationPID(float degrees)
 {

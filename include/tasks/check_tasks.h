@@ -5,7 +5,8 @@
 
 #define TASK_TYPE CHECK_COLORS_DONE
 
-TASK_CONTEXT(){
+TASK_CONTEXT()
+{
     // bool to complete tasks
     bool &blue;
     bool &pink;
@@ -14,19 +15,18 @@ TASK_CONTEXT(){
     bool &orange;
 };
 
-TASK_INIT(    bool &blue,
-    bool &pink,
-    bool &yellow,
-    bool &green,
-    bool &orange)
+TASK_INIT(bool &blue,
+          bool &pink,
+          bool &yellow,
+          bool &green,
+          bool &orange)
 {
     return (TASK_ctx){
         .blue = blue,
         .pink = pink,
         .yellow = yellow,
         .green = green,
-        .orange = orange
-    };
+        .orange = orange};
 }
 
 TASK_SETUP()
