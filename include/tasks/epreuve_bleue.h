@@ -10,14 +10,13 @@
 
 TASK_CONTEXT()
 {
-  //Mettre les variables qui seront réutilisées dans le main
+    bool &blue;
 };
 
-TASK_INIT()
+TASK_INIT(bool &blue)
 {
   return (epreuve_bleue_context){
-    //Mettre les variables qui seront déclarées plus bas
-    //format: .nom_variable = nom variable,
+     .blue = blue
     };
 }
 

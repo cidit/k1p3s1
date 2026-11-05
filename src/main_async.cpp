@@ -189,13 +189,11 @@ void loop()
     }
     else if (couleur == VERT)
     {
-      green = true;
       epreuve_verte_TASK.state = SETUP;
       current_task = &epreuve_verte_TASK;
     }
     else if (couleur == BLEU)
     {
-      blue = true;
       epreuve_bleue_TASK.state = SETUP;
       current_task = &epreuve_bleue_TASK;
     }

@@ -15,14 +15,16 @@ TASK_CONTEXT()
 {
   //Mettre les variables qui seront réutilisées dans le main
   TimerContext timer;
+  bool &pink;
 };
 
-TASK_INIT()
+TASK_INIT(bool &pink)
 {
   return (epreuve_rose_context){
     //Mettre les variables qui seront déclarées plus bas
     //format: .nom_variable = nom variable,
-    .timer = make_timer(us_from_s(5), 0)
+    .timer = make_timer(us_from_s(5), 0),
+    .pink = pink
     };
 }
 
@@ -49,6 +51,7 @@ TASK_CLEANUP()
 {
   // nothing to do
   Serial.print("Épreuve rose finie");
+  pink_done = true;
   return true;
 }
 
