@@ -10,14 +10,13 @@
 
 TASK_CONTEXT()
 {
-  //Mettre les variables qui seront réutilisées dans le main
+  bool &green;
 };
 
-TASK_INIT()
+TASK_INIT(bool &green)
 {
   return (epreuve_verte_context){
-    //Mettre les variables qui seront déclarées plus bas
-    //format: .nom_variable = nom variable,
+    .green = green
     };
 }
 
@@ -35,7 +34,7 @@ TASK_LOOP()
 
 TASK_CLEANUP()
 {
-  // nothing to do
+  green_done = true;
   return false;
 }
 

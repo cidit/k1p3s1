@@ -44,7 +44,6 @@ TASK_LOOP()
 
 TASK_CLEANUP()
 {
-  // nothing to do
   Serial.println("Épreuve bleue finie")
   return true;
 }
