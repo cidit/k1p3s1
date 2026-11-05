@@ -10,13 +10,13 @@
 
 TASK_CONTEXT()
 {
-  bool &green;
+  bool &green_done;
 };
 
-TASK_INIT(bool &green)
+TASK_INIT(bool &green_done)
 {
-  return (epreuve_verte_context){
-    .green = green
+  return (TASK_ctx){
+    .green_done = green_done
     };
 }
 
@@ -34,7 +34,7 @@ TASK_LOOP()
 
 TASK_CLEANUP()
 {
-  green_done = true;
+  ctx.green_done = true;
   return false;
 }
 

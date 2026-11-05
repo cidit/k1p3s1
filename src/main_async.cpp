@@ -96,8 +96,8 @@ MAKE_TASK(TRACK_SPEED, encoder_sampling, right_enco, left_enco, right_speed_ema,
 MAKE_TASK(UPDATE_DRIVE, pid_cycle, drive)
 MAKE_TASK(TRACK_LINE, line_follower_timer, follower_pins, mappings, follower_emas)
 MAKE_TASK(detect_color, couleur, red, green, blue)
-MAKE_TASK(epreuve_rose, pink_done)
-MAKE_TASK(epreuve_orange, orange_done)
+MAKE_TASK(epreuve_rose) // TODO: MISSING DONE PARAMS
+MAKE_TASK(epreuve_orange) // TODO: MISSING DONE PARAMS
 MAKE_TASK(epreuve_jaune, yellow_done)
 MAKE_TASK(epreuve_verte, green_done)
 MAKE_TASK(epreuve_bleue, blue_done)

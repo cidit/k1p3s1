@@ -10,13 +10,18 @@
 
 TASK_CONTEXT()
 {
+  //Mettre les variables qui seront réutilisées dans le main
+  bool &robot_reveil;
     bool &blue;
 };
 
-TASK_INIT(bool &blue)
+TASK_INIT(bool &blue, bool &robot_reveil)
 {
   return (epreuve_bleue_context){
-     .blue = blue
+    //Mettre les variables qui seront déclarées plus bas
+    //format: .nom_variable = nom variable,
+    .blue = bleu
+    .robot_reveil = robot_reveil;
     };
 }
 
@@ -28,14 +33,22 @@ TASK_SETUP()
 
 TASK_LOOP()
 {
-  //loop de la tâche
-  return false;
+   while (!ctx.robot_reveil)
+  {
+    if (IR_wake_check())
+    {
+      beep(3);
+      ctx.robot_reveil = true;
+    }
+  }
+  return true;
 }
 
 TASK_CLEANUP()
 {
   blue_done = true;
-  return false;
+  Serial.println("Épreuve bleue finie");
+  return true;
 }
 
 #undef TASK_TYPE

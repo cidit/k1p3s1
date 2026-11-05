@@ -13,7 +13,7 @@ const float circumference = 0.24; // m
 const float dist_roue = (WHEEL_DISTANCE_OUTER - WHEEL_THICKNESS) / 1000.0; // m
 const float circle = dist_roue*3.1416; // m
 const float ticks_per_turn = 3200.0; //ticks
-const int ir_receive_in = 37;
+const int _ir_receive_in = 37;
 
 extern bool _robot_start;
 extern bool _robot_wake_up;
