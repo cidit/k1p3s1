@@ -64,4 +64,7 @@ void beep(int times);
 void IR_control_check();
 bool can_robot_move();
 
+bool find_the_wall();
+
+
 #endif // FONCTIONS_H

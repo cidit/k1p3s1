@@ -10,6 +10,8 @@
 
     const int pin_detect_proxim_av = 1;
     const int cote = 2;
+    float speed = -0.5;
+
 
 TASK_CONTEXT()
 {
@@ -32,8 +34,7 @@ TASK_SETUP()
 
 TASK_LOOP()
 {
-  find_the_wall();
-  return false;
+  return find_the_wall(speed, pin_detect_proxim_av);
 }
 
 TASK_CLEANUP()
