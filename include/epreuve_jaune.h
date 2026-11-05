@@ -1,8 +1,9 @@
 #pragma once
-#include "fonctions.h"
 #include <LibRobus.h>
-#include <robots\calib_3b_wheels.h>
-#include <utils\calib.h>
+#include "fonctions.h"
+#include "utils/calib.h"
+
+#include "robots/calib_wheels.h"
 
 void forwardcorrectionphil(float baseSpeed)
 {
