@@ -26,15 +26,7 @@
 #include "tasks/epreuve_bleue.h"
 #include "epreuve_jaune.h"
 
-#include "tasks/check_tasks.h"
-
-#define ROBOT_3A
-
-#ifdef ROBOT_3A
-#include "robots/calib_3a_wheels.h"
-#else
-#include "robots/calib_3b_wheels.h"
-#endif
+#include "robots/calib_wheels.h"
 
 TimerContext graph_timer = make_timer(us_from_s(T_from_Hz(2)), 0);
 TimerContext encoder_sampling = make_timer(us_from_s(T_from_Hz(200)), 0);
@@ -65,6 +57,8 @@ bool pink_done = false;
 bool yellow_done = false;
 bool green_done = false;
 bool orange_done = false;
+
+bool robot_reveil = false;
 
 #ifdef ROBOT_3A
 PidContext right_pid = make_pid(PidK{.p = 0.2, .i = 0, .d = 0}, D_ON_PV);
@@ -109,11 +103,12 @@ MAKE_TASK(TRACK_SPEED, encoder_sampling, right_enco, left_enco, right_speed_ema,
 MAKE_TASK(UPDATE_DRIVE, pid_cycle, drive)
 MAKE_TASK(TRACK_LINE, line_follower_timer, follower_pins, mappings, follower_emas)
 MAKE_TASK(detect_color, couleur, red, green, blue)
-MAKE_TASK(epreuve_rose)
-MAKE_TASK(epreuve_orange)
-MAKE_TASK(epreuve_jaune)
-MAKE_TASK(epreuve_verte)
-MAKE_TASK(epreuve_bleue)
+MAKE_TASK(epreuve_rose, pink_done) // TODO: MISSING DONE PARAMS
+MAKE_TASK(epreuve_orange, orange_done) // TODO: MISSING DONE PARAMS
+MAKE_TASK(epreuve_jaune, yellow_done)
+MAKE_TASK(epreuve_verte, green_done)
+MAKE_TASK(epreuve_bleue, blue_done, robot_reveil)
+MAKE_TASK(CHECK_COLORS_DONE, blue_done, pink_done, yellow_done, green_done, orange_done)
 
 Task *background_tasks[] = {
     &TRACK_SPEED_TASK,
