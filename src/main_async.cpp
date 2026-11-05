@@ -20,9 +20,11 @@
 #include "tasks/detect_color.h"
 #include "tasks/epreuve_rose.h"
 #include "tasks/epreuve_orange.h"
-#include "tasks/epreuve_jaune.h"
+#include "tasks/epreuve_jaune.h" // INUTILE
 #include "tasks/epreuve_verte.h"
 #include "tasks/epreuve_bleue.h"
+
+#include "epreuve_jaune.h"
 
 #define ROBOT_3A
 
@@ -169,8 +171,13 @@ void loop()
     }
     else if (couleur == JAUNE)
     {
-      epreuve_jaune_TASK.state = SETUP;
-      current_task = &epreuve_jaune_TASK;
+      // epreuve_jaune_TASK.state = SETUP;
+      // current_task = &epreuve_jaune_TASK;
+      pid_disable(drive.left.speed_correction);
+      pid_disable(drive.right.speed_correction);
+      pid_disable(drive.rotation);
+      find_the_wall(-0.5, 1);
+      couleur = UNKNOWN_COLOR;
     }
     else if (couleur == VERT)
     {
