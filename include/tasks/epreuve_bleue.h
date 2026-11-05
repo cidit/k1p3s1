@@ -3,37 +3,38 @@
 #include "utils/task.h"
 #include <Arduino.h>
 #include <LibRobus.h>
-#include "fonctions.h"
+// #include "fonctions.h"
 #include <Wire.h>
+#include "utils/recepteurIR.h"
 
 #define TASK_TYPE epreuve_bleue
 
 TASK_CONTEXT()
 {
-  //Mettre les variables qui seront réutilisées dans le main
+  // Mettre les variables qui seront réutilisées dans le main
   bool &robot_reveil;
-    bool &blue;
+  bool &blue_done;
 };
 
-TASK_INIT(bool &blue, bool &robot_reveil)
+TASK_INIT(bool &blue_done, bool &robot_reveil)
 {
-  return (epreuve_bleue_context){
-    //Mettre les variables qui seront déclarées plus bas
-    //format: .nom_variable = nom variable,
-    .blue = bleu
-    .robot_reveil = robot_reveil;
-    };
+  return (TASK_ctx) {
+      // Mettre les variables qui seront déclarées plus bas
+      // format: .nom_variable = nom variable,
+      .robot_reveil = robot_reveil,
+      .blue_done = blue_done,
+  };
 }
 
 TASK_SETUP()
 {
-  //setup
+  // setup
   return true;
 }
 
 TASK_LOOP()
 {
-   while (!ctx.robot_reveil)
+  while (!ctx.robot_reveil)
   {
     if (IR_wake_check())
     {
@@ -46,7 +47,7 @@ TASK_LOOP()
 
 TASK_CLEANUP()
 {
-  blue_done = true;
+  ctx.blue_done = true;
   Serial.println("Épreuve bleue finie");
   return true;
 }

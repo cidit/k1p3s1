@@ -27,8 +27,6 @@
 
 #include "epreuve_jaune.h"
 
-#define ROBOT_3A
-
 #include "robots/calib_wheels.h"
 
 TimerContext graph_timer = make_timer(us_from_s(T_from_Hz(2)), 0);
@@ -51,6 +49,7 @@ bool yellow_done = false;
 bool green_done = false;
 bool orange_done = false;
 
+bool robot_reveil = false;
 
 #ifdef ROBOT_3A
 PidContext right_pid = make_pid(PidK{.p = 0.2, .i = 0, .d = 0}, D_ON_PV);
@@ -95,11 +94,11 @@ MAKE_TASK(TRACK_SPEED, encoder_sampling, right_enco, left_enco, right_speed_ema,
 MAKE_TASK(UPDATE_DRIVE, pid_cycle, drive)
 MAKE_TASK(TRACK_LINE, line_follower_timer, follower_pins, mappings, follower_emas)
 MAKE_TASK(detect_color, couleur, red, green, blue)
-MAKE_TASK(epreuve_rose) // TODO: MISSING DONE PARAMS
-MAKE_TASK(epreuve_orange) // TODO: MISSING DONE PARAMS
+MAKE_TASK(epreuve_rose, pink_done) // TODO: MISSING DONE PARAMS
+MAKE_TASK(epreuve_orange, orange_done) // TODO: MISSING DONE PARAMS
 MAKE_TASK(epreuve_jaune, yellow_done)
 MAKE_TASK(epreuve_verte, green_done)
-MAKE_TASK(epreuve_bleue, blue_done)
+MAKE_TASK(epreuve_bleue, blue_done, robot_reveil)
 MAKE_TASK(CHECK_COLORS_DONE, blue_done, pink_done, yellow_done, green_done, orange_done)
 
 Task *background_tasks[] = {
