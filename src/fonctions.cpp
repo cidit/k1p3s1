@@ -1,9 +1,13 @@
 //fonctions.cpp
 #include "fonctions.h"
 #include <LibRobus.h>
+#include <robots\calib_3b_wheels.h>
+#include <utils\calib.h>
 
 void forwardcorrection(float baseSpeed)
 {
+    float baseSpeed_left = lin_interpolate(left_wheel, baseSpeed); // technically not a basespeed but a power
+    float baseSpeed_right = lin_interpolate(right_wheel, baseSpeed); // technically not a basespeed but a power
     static int32_t previous_count0 = 0;
     static int32_t previous_count1 = 0;
 
@@ -22,48 +26,56 @@ void forwardcorrection(float baseSpeed)
 
     float correction = diff * kp_correction;
 
-    MOTOR_SetSpeed(0, baseSpeed - correction);
-    MOTOR_SetSpeed(1, baseSpeed + correction);
+    MOTOR_SetSpeed(0, baseSpeed_left - correction);
+    MOTOR_SetSpeed(1, baseSpeed_right + correction);
 }
-void rotationPID(float degrees){
-  float offset = 5.0*(degrees/abs(degrees)); // 3b = 5.0 3a = 4.3
+void rotationPID(float degrees, float speed){
+  float offset = 5.0*(degrees/abs(degrees));
   float target = ((degrees+offset)/360.0) * circle * (ticks_per_turn/circumference);
-  float kp = 0.002; // 3b = 0.002 3a = 0.003
+
+  float kp = 0.002;
   float ki = 0.000001;
   float kd = 0.02;
+
   float accumulated_error0 = 0.0;
   float accumulated_error1 = 0.0;
+
   ENCODER_Reset(0);
   ENCODER_Reset(1);
+
   float previous_error0 = target - ENCODER_Read(0);
   float previous_error1 = target + ENCODER_Read(1);
-  
-  
+
   while (abs(target - ENCODER_Read(0)) > 30 or abs(target + ENCODER_Read(1)) > 30){
 
-  float error0 = target - ENCODER_Read(0);
-  float error1 = target + ENCODER_Read(1);
+    float error0 = target - ENCODER_Read(0);
+    float error1 = target + ENCODER_Read(1);
 
-  float derivative0 = error0 - previous_error0;
-  float derivative1 = error1 - previous_error1;
-  
-  float speed0 = (error0 * kp) + (accumulated_error0 * ki) + (derivative0 * kd);
-  float speed1 = -((error1 * kp) + (accumulated_error1 * ki) + (derivative1 * kd));
+    float derivative0 = error0 - previous_error0;
+    float derivative1 = error1 - previous_error1;
 
-  if (speed0 > 0.3) speed0 = 0.3;
-  else if (speed0 < -0.3) speed0 = -0.3;
+    float speed0 = (error0 * kp) + (accumulated_error0 * ki) + (derivative0 * kd);
+    float speed1 = -((error1 * kp) + (accumulated_error1 * ki) + (derivative1 * kd));
 
-  if (speed1 > 0.3) speed1 = 0.3;
-  else if (speed1 < -0.3) speed1 = -0.3;
+    // Limit motor speeds using the speed input
+    if (speed0 > speed) speed0 = speed;
+    else if (speed0 < -speed) speed0 = -speed;
 
-  MOTOR_SetSpeed(0, speed0);
-  MOTOR_SetSpeed(1, speed1);
-  accumulated_error0 += error0;
-  accumulated_error1 += error1;
-  previous_error0 = error0;
-  previous_error1 = error1;  
-  delay(10);
+    if (speed1 > speed) speed1 = speed;
+    else if (speed1 < -speed) speed1 = -speed;
+
+    MOTOR_SetSpeed(0, speed0);
+    MOTOR_SetSpeed(1, speed1);
+
+    accumulated_error0 += error0;
+    accumulated_error1 += error1;
+
+    previous_error0 = error0;
+    previous_error1 = error1;
+
+    delay(10);
   }
+
   MOTOR_SetSpeed(0, 0);
   MOTOR_SetSpeed(1, 0);
 }
@@ -97,18 +109,6 @@ void finalDance(float degrees) {
 
   MOTOR_SetSpeed(0, 0);
   MOTOR_SetSpeed(1, 0);
-}
-void turn_right(){
-  rotationPID(90);
-}
-void turn_left(){
-  rotationPID(-90);
-}
-void turn_more_right(){
-  rotationPID(91);
-}
-void turn_more_left(){
-  rotationPID(-91);
 }
 
 void forwardInMetersTrapeze(float meters) {

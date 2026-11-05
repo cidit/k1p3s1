@@ -21,7 +21,7 @@ const int ir_receive_in = 37;
 
 void forwardcorrection(float speed);
 
-void rotationPID(float degrees);
+void rotationPID(float degrees, float speed);
 void finalDance(float degrees);
 void turn_right();
 void turn_left();
