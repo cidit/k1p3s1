@@ -89,14 +89,13 @@ void setup()
     {
         pinMode(p, INPUT);
     }
-    for (auto task : background_tasks)
-    {
-        task->state = TaskState::SETUP;
-    }
-
     for (size_t i = 0; i < follower_pins_len; i++)
     {
         follower_emas[i] = make_EMA(s_from_us(line_follower_timer.period), 0.05);
+    }
+    for (auto task : background_tasks)
+    {
+        task->state = TaskState::SETUP;
     }
 }
 
