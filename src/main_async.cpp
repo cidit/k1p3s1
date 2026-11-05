@@ -24,6 +24,7 @@
 #include "tasks/epreuve_verte.h"
 #include "tasks/epreuve_bleue.h"
 #include "tasks/check_tasks.h"
+#include <MegaServo/MegaServo.h>
 
 #include "epreuve_jaune.h"
 
@@ -129,6 +130,10 @@ void setup()
   {
     task->state = TaskState::SETUP;
   }
+  
+  servo_up.attach(2);
+  servo_pince.attach(3);
+  delay(2000);
 }
 
 void loop()
