@@ -7,98 +7,134 @@
 
 #include <line_follower.h>
 
-#include <tasks/track_speed.h> 
+#include <tasks/track_speed.h>
+#include <tasks/update_drive.h>
+#include <tasks/track_line.h>
 
-TimerContext graph_timer = make_timer(500, 0);
-TimerContext encoder_sampling = make_timer(10, 0);
-TimerContext pid_timer = make_timer(10, 0);
+#define ROBOT_3A
+
+#ifdef ROBOT_3A
+#include "robots/calib_3a_wheels.h"
+#else
+#include "robots/calib_3b_wheels.h"
+#endif
+
+TimerContext graph_timer = make_timer(us_from_s(T_from_Hz(20)), 0);
+TimerContext encoder_sampling = make_timer(us_from_s(T_from_Hz(200)), 0);
+TimerContext pid_cycle = make_timer(us_from_s(T_from_Hz(80)), 0);
+TimerContext line_follower_timer = make_timer(us_from_s(T_from_Hz(50)), 0);
 
 RingBuffer<2> right_enco = make_ring_buffer<2>();
 RingBuffer<2> left_enco = make_ring_buffer<2>();
 
-EmaContext right_speed_ema = make_EMA(encoder_sampling.period, .01);
-EmaContext left_speed_ema = make_EMA(encoder_sampling.period, .01);
+EmaContext right_speed_ema = make_EMA(encoder_sampling.period, .1);
+EmaContext left_speed_ema = make_EMA(encoder_sampling.period, .1);
 
-PidContext right_speed_pid = make_pid(PidK{.p = 0, .i = 0, .d = 0}, D_ON_PV);
-PidContext left_speed_pid = make_pid(PidK{.p = 0, .i = 0, .d = 0}, D_ON_PV);
+OdometryContext odometry = make_odometry();
+
+#ifdef ROBOT_3A
+PidContext right_pid = make_pid(PidK{.p = 0.2, .i = 0, .d = 0}, D_ON_PV);
+PidContext left_pid = make_pid(PidK{.p = 0.2, .i = 0, .d = 0}, D_ON_PV);
+PidContext rotation_pid = make_pid(PidK{.p = 0.2, .i = 0, .d = 0}, D_ON_PV);
+#else
+// PidContext right_pid = make_pid(PidK{.p = 1.3, .i = 0.01, .d = 0}, D_ON_PV);
+PidContext right_pid = make_pid(PidK{.p = 0.3, .i = 0, .d = 0}, D_ON_PV);
+PidContext left_pid = make_pid(PidK{.p = 0.2, .i = 0, .d = 0}, D_ON_PV);
+#endif
 
 Motor right_motor = make_motor(RIGHT,
                                false,
-                               right_speed_pid,
+                               right_pid,
                                right_speed_ema,
                                right_wheel);
 
 Motor left_motor = make_motor(LEFT,
                               false,
-                              left_speed_pid,
+                              left_pid,
                               left_speed_ema,
                               left_wheel);
 
-Drive drive = (Drive){
-    .left = left_motor,
-    .right = right_motor,
-};
+Drive drive = make_drive(left_motor, right_motor, rotation_pid);
 
-
-
-
-uint8_t follower_pins[] = { A2, A3, A4 };
-constexpr size_t follower_pins_len = sizeof(follower_pins)/sizeof(follower_pins[0]);
+uint8_t follower_pins[] = {A2, A3, A4};
+constexpr size_t follower_pins_len = sizeof(follower_pins) / sizeof(follower_pins[0]);
+EmaContext follower_emas[follower_pins_len];
 
 MappingParameters mappings[follower_pins_len] = {
-    {.min = 280, .max = 730},
-    {.min = 50, .max = 500},
-    {.min = 60, .max = 640},
+    {.min = 485, .max = 693},
+    {.min = 464, .max = 810},
+    {.min = 569, .max = 850},
 };
 
+MAKE_TASK(TRACK_SPEED, encoder_sampling, right_enco, left_enco, right_speed_ema, left_speed_ema, odometry)
+MAKE_TASK(UPDATE_DRIVE, pid_cycle, drive)
+MAKE_TASK(TRACK_LINE, line_follower_timer, follower_pins, mappings, follower_emas)
 
-// MAKE_TASK(TRACK_SPEED,)
+Task *background_tasks[] = {
+    &TRACK_SPEED_TASK,
+    &UPDATE_DRIVE_TASK,
+    &TRACK_LINE_TASK,
+};
 
-void setup() {
+Task *tasks[] = {
+    // &CALIBRATION_TASK,
+};
+
+void setup()
+{
     BoardInit();
     Serial.begin(115200);
 
-    for (auto p : follower_pins) {
+    for (auto p : follower_pins)
+    {
         pinMode(p, INPUT);
+    }
+    for (auto task : background_tasks)
+    {
+        task->state = TaskState::SETUP;
+    }
+
+    for (size_t i = 0; i < follower_pins_len; i++)
+    {
+        follower_emas[i] = make_EMA(s_from_us(line_follower_timer.period), 0.05);
     }
 }
 
-void loop() {
-    uint16_t raw[follower_pins_len];
-    for (size_t i = 0; i < follower_pins_len; i++) {
-        raw[i] = analogRead(follower_pins[i]);
+void loop()
+{
+    for (auto task : background_tasks)
+    {
+        task_run(*task);
+    }
+    for (auto task : tasks)
+    {
+        if (task->state != DONE)
+        {
+            task_run(*task);
+        }
     }
 
-    int16_t offset[follower_pins_len];
-    pipe_offset(mappings, raw, offset, follower_pins_len);
+    float follower_vals[] = {
+        follower_emas[0].current,
+        follower_emas[1].current,
+        follower_emas[2].current,
+    };
+    auto intensity_ = intensity(follower_vals, follower_pins_len);
+    auto distribution_ = distribution(follower_vals, follower_pins_len);
 
-    float scaled[follower_pins_len];
-    pipe_scaled(mappings, offset, scaled, follower_pins_len);
+    auto base_speed = 0.15;
+    motor_set_speed(drive.left, -(base_speed - distribution_ / 4));
+    motor_set_speed(drive.right, -(base_speed + distribution_ / 4));
 
-    float clamped[follower_pins_len];
-    pipe_clamped(mappings, scaled, clamped, follower_pins_len);
+    auto now_micros = micros();
+    if (timer_ready(graph_timer, now_micros))
+    {
+        timer_reset(graph_timer, now_micros);
 
-    Serial.println();
-
-    GRAPH(raw[0])
-    GRAPH(raw[1])
-    GRAPH(raw[2])
-    GRAPH(offset[0])
-    GRAPH(offset[1])
-    GRAPH(offset[2])
-    GRAPH(scaled[0])
-    GRAPH(scaled[1])
-    GRAPH(scaled[2])
-    GRAPH(clamped[0])
-    GRAPH(clamped[1])
-    GRAPH(clamped[2])
-
-
-    auto intensity_ = intensity(clamped, follower_pins_len);
-    auto distribution_ = distribution(clamped, follower_pins_len);
-    
-    GRAPH(intensity_)
-    GRAPH(distribution_)
-
-    delay(200);
+        GRAPH(follower_emas[0].current)
+        GRAPH(follower_emas[1].current)
+        GRAPH(follower_emas[2].current)
+        GRAPH(intensity_)
+        GRAPH(distribution_)
+    }
 }
