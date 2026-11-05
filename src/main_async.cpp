@@ -60,6 +60,8 @@ bool orange_done = false;
 
 bool robot_reveil = false;
 
+bool we_re_at_hole = false;
+
 #ifdef ROBOT_3A
 PidContext right_pid = make_pid(PidK{.p = 0.2, .i = 0, .d = 0}, D_ON_PV);
 PidContext left_pid = make_pid(PidK{.p = 0.2, .i = 0, .d = 0}, D_ON_PV);
@@ -103,7 +105,7 @@ MAKE_TASK(TRACK_SPEED, encoder_sampling, right_enco, left_enco, right_speed_ema,
 MAKE_TASK(UPDATE_DRIVE, pid_cycle, drive)
 MAKE_TASK(TRACK_LINE, line_follower_timer, follower_pins, mappings, follower_emas)
 MAKE_TASK(detect_color, couleur, red, green, blue)
-MAKE_TASK(epreuve_rose, pink_done) // TODO: MISSING DONE PARAMS
+MAKE_TASK(epreuve_rose, pink_done)     // TODO: MISSING DONE PARAMS
 MAKE_TASK(epreuve_orange, orange_done) // TODO: MISSING DONE PARAMS
 MAKE_TASK(epreuve_jaune, yellow_done)
 MAKE_TASK(epreuve_verte, green_done)
@@ -179,9 +181,22 @@ void loop()
   auto intensity_ = intensity(follower_vals, follower_pins_len);
   auto distribution_ = distribution(follower_vals, follower_pins_len);
 
+  if (intensity_ > 2.5)
+  {
+    we_re_at_hole = !we_re_at_hole;
+  }
+
   auto base_speed = 0.15;
-  motor_set_speed(drive.left, -(base_speed - distribution_ / 4));
-  motor_set_speed(drive.right, -(base_speed + distribution_ / 4));
+  if (we_re_at_hole)
+  {
+    motor_set_speed(drive.left, base_speed);
+    motor_set_speed(drive.right, base_speed);
+  }
+  else
+  {
+    motor_set_speed(drive.left, -(base_speed - distribution_ / 4));
+    motor_set_speed(drive.right, -(base_speed + distribution_ / 4));
+  }
 
   /* ===== LANCEMENT DES EPREUVES ==== */
 
@@ -195,8 +210,7 @@ void loop()
       current_task = &epreuve_rose_TASK;
     }
     else if (couleur == ORANGE)
-    {
-      Mycolored_leds[orange].on();
+    { 
       epreuve_orange_TASK.state = SETUP;
       current_task = &epreuve_orange_TASK;
     }
