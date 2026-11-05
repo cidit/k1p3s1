@@ -3,7 +3,7 @@
 #include "utils/task.h"
 #include <Arduino.h>
 #include <LibRobus.h>
-#include "fonctions.h"
+#include "utils/recepteurIR.h"
 #include <Wire.h>
 
 #define TASK_TYPE epreuve_bleue
@@ -11,13 +11,15 @@
 TASK_CONTEXT()
 {
   //Mettre les variables qui seront réutilisées dans le main
+  bool &robot_reveil = false;
 };
 
-TASK_INIT()
+TASK_INIT(bool &robot_reveil)
 {
   return (epreuve_bleue_context){
     //Mettre les variables qui seront déclarées plus bas
     //format: .nom_variable = nom variable,
+    .robot_reveil = robot_reveil;
     };
 }
 
@@ -29,14 +31,22 @@ TASK_SETUP()
 
 TASK_LOOP()
 {
-  //loop de la tâche
-  return false;
+   while (!robot_reveil)
+  {
+    if (IR_wake_check())
+    {
+      beep(3);
+      robot_reveil = true;
+    }
+  }
+  return true;
 }
 
 TASK_CLEANUP()
 {
   // nothing to do
-  return false;
+  Serial.println("Épreuve bleue finie")
+  return true;
 }
 
 #undef TASK_TYPE
