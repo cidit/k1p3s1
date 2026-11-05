@@ -37,6 +37,7 @@ TASK_LOOP()
 TASK_CLEANUP()
 {
   // nothing to do
+  Serial.print("Épreuve orange finie");
   return false;
 }
 

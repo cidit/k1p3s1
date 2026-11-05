@@ -16,6 +16,12 @@
 #include "tasks/track_line.h"
 #include "tasks/track_speed.h"
 #include "tasks/update_drive.h"
+#include "tasks/detect_color.h"
+#include "tasks/epreuve_rose.h"
+#include "tasks/epreuve_orange.h"
+#include "tasks/epreuve_jaune.h"
+#include "tasks/epreuve_verte.h"
+#include "tasks/epreuve_bleue.h"
 
 #define ROBOT_3A
 
@@ -73,19 +79,34 @@ MappingParameters mappings[follower_pins_len] = {
     {.min = 569, .max = 850},
 };
 
+int couleur;
+uint16_t red, green, blue;
+
 MAKE_TASK(TRACK_SPEED, encoder_sampling, right_enco, left_enco, right_speed_ema, left_speed_ema, odometry)
 MAKE_TASK(UPDATE_DRIVE, pid_cycle, drive)
 MAKE_TASK(TRACK_LINE, line_follower_timer, follower_pins, mappings, follower_emas)
+MAKE_TASK(detect_color, couleur, red, green, blue)
+MAKE_TASK(epreuve_rose)
+MAKE_TASK(epreuve_orange)
+MAKE_TASK(epreuve_jaune)
+MAKE_TASK(epreuve_verte)
+MAKE_TASK(epreuve_bleue)
 
 Task *background_tasks[] = {
     &TRACK_SPEED_TASK,
     &UPDATE_DRIVE_TASK,
     &TRACK_LINE_TASK,
+    &detect_color_TASK
 };
 
 Task *tasks[] = {
     // TACHES QUI SONT ATTENDUES D'ETRE PARTIES ET/OU ARRETÉES MANUELLEMENT
     // ...
+    &epreuve_rose_TASK,
+    &epreuve_orange_TASK,
+    &epreuve_jaune_TASK,
+    &epreuve_verte_TASK,
+    &epreuve_bleue_TASK
 };
 
 void setup()
@@ -165,6 +186,44 @@ void loop()
       Serial.println(r_mps, 5);
       Serial.println(l_mps, 5);
       Serial.println(r_mps / l_mps, 5);
+
+      if (current_task.state == DONE)
+      {
+        if(couleur == ROSE) 
+        {
+          epreuve_rose_TASK.state = SETUP;
+          current_task = epreuve_rose_TASK;
+        }
+        else if(couleur == ORANGE) 
+        {
+          epreuve_orange_TASK.state = SETUP;
+          current_task = epreuve_orange_TASK;
+        }
+        else if(couleur == JAUNE) 
+        {
+          epreuve_jaune_TASK.state = SETUP;
+          current_task = epreuve_jaune_TASK;
+        }
+        else if(couleur == VERT) 
+        {
+          epreuve_verte_TASK.state = SETUP;
+          current_task = epreuve_verte_TASK;
+        }
+        else if(couleur == BLEU) 
+        {
+          epreuve_bleue_TASK.state = SETUP;
+          current_task = epreuve_bleue_TASK;
+        }
+      }
+
+      if (current_task.state != DONE)
+      {
+        run_task(current_task);
+      } 
+      else 
+      {
+        current_task = IDLE_TASK;
+      }
     }
   }
 }
