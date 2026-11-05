@@ -25,7 +25,6 @@
 #include "robots/calib_3b_wheels.h"
 #endif
 
-
 TimerContext graph_timer = make_timer(us_from_s(T_from_Hz(2)), 0);
 TimerContext encoder_sampling = make_timer(us_from_s(T_from_Hz(200)), 0);
 TimerContext pid_cycle = make_timer(us_from_s(T_from_Hz(80)), 0);
@@ -85,16 +84,15 @@ Task *background_tasks[] = {
 };
 
 Task *tasks[] = {
-  // TACHES QUI SONT ATTENDUES D'ETRE PARTIES ET/OU ARRETÉES MANUELLEMENT
-  // ...
+    // TACHES QUI SONT ATTENDUES D'ETRE PARTIES ET/OU ARRETÉES MANUELLEMENT
+    // ...
 };
-
 
 void setup()
 {
   BoardInit();
   Serial.begin(115200);
-  
+
   for (auto p : follower_pins)
   {
     pinMode(p, INPUT);
@@ -104,15 +102,15 @@ void setup()
     follower_emas[i] = make_EMA(s_from_us(line_follower_timer.period), 0.05);
   }
   // begin background tasks;
-    for (auto task : background_tasks)
-    {
-        task->state = TaskState::SETUP;
-    }
+  for (auto task : background_tasks)
+  {
+    task->state = TaskState::SETUP;
+  }
 }
 
 void loop()
 {
-  
+  /* ===== TASK RUNNING ===== */
   for (auto task : background_tasks)
   {
     task_run(*task);
@@ -125,6 +123,22 @@ void loop()
     }
   }
 
+  /* ===== LINE FOLLOWER ===== */
+
+  float follower_vals[] = {
+      follower_emas[0].current,
+      follower_emas[1].current,
+      follower_emas[2].current,
+  };
+  auto intensity_ = intensity(follower_vals, follower_pins_len);
+  auto distribution_ = distribution(follower_vals, follower_pins_len);
+
+  auto base_speed = 0.15;
+  motor_set_speed(drive.left, -(base_speed - distribution_ / 4));
+  motor_set_speed(drive.right, -(base_speed + distribution_ / 4));
+
+  /* ===== PRINGINT SECTION ==== */
+  
   auto now = micros();
   if (timer_ready(graph_timer, now) && true)
   {
@@ -141,12 +155,12 @@ void loop()
       GRAPHT(l_mps)
       GRAPHT(r_mps / l_mps)
       GRAPH(right_motor.applied_power)
-      
+
       auto rot = odometry.orientation_rad;
       GRAPHT(rot)
-      
+
       PLOT("odometry", odometry.position_mm.x, odometry.position_mm.y)
-      
+
       Serial.println();
       Serial.println(r_mps, 5);
       Serial.println(l_mps, 5);
