@@ -24,6 +24,23 @@ TASK_CONTEXT()
     OdometryContext & odometry;
 };
 
+/* TODO: clean this little experiment
+#define myCTX                                   \
+X(TimerContext &, polling_timer)            \
+X(RingBuffer<2> &, encoder_positions_right) \
+X(RingBuffer<2> &, encoder_positions_left)  \
+X(EmaContext &, speed_ema_right)            \
+X(EmaContext &, speed_ema_left)             \
+X(OdometryContext &, odometry)
+
+#define X(type, name) ;
+struct myCtx
+{
+    myCTX
+};
+#undef X
+*/
+
 TASK_INIT(
     TimerContext &polling_timer,
     RingBuffer<2> &encoder_positions_right,
@@ -71,6 +88,8 @@ TASK_LOOP()
                 WHEEL_DIAMETER,
                 ring_buffer_read_nth(ctx.encoder_positions_right, 1) - ring_buffer_read_nth(ctx.encoder_positions_right, 0));
             auto r_mps = (r_delta_mm / 1000) / s_from_us(ctx.polling_timer.period);
+            // Serial.println(
+                // ring_buffer_read_nth(ctx.encoder_positions_right, 1) - ring_buffer_read_nth(ctx.encoder_positions_right, 0));
             auto l_delta_mm = ticks_to_mm(
                 WHEEL_TICK_PER_TURN,
                 WHEEL_DIAMETER,
