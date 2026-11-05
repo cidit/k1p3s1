@@ -15,7 +15,6 @@ RingBuffer<2> left_enco = make_ring_buffer<2>();
 
 OdometryContext odometry = make_odometry();
 
-
 void setup()
 {
   BoardInit();
@@ -25,9 +24,7 @@ void setup()
 void loop()
 {
   auto now = micros();
-
   
-
   if (timer_ready(graph_timer, now))
   {
     timer_reset(graph_timer, now);
