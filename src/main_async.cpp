@@ -106,6 +106,7 @@ Task *background_tasks[] = {
     &TRACK_SPEED_TASK,
     &UPDATE_DRIVE_TASK,
     &TRACK_LINE_TASK,
+    &CHECK_COLORS_DONE_TASK,
     &detect_color_TASK};
 
 Task *current_task = &IDLE_TASK;

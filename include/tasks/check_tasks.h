@@ -41,7 +41,7 @@ TASK_LOOP()
 
 TASK_CLEANUP()
 {
-    // TODO: LACHER!!!
+    lacher();
     return true;
 }
 
