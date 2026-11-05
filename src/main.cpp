@@ -2,6 +2,7 @@
 #include <LibRobus.h>
 #include <stack>
 #include "fonctions.h"
+#include <MegaServo/MegaServo.h>
 
 bool started_robot = true;
 std::stack<int> retour;
@@ -19,6 +20,9 @@ void setup() {
   Serial.begin(9600);
   BoardInit();
   retour.push(pose_x);
+  
+  servo_up.attach(2);
+  servo_pince.attach(3);
   delay(2000);
 }
 
