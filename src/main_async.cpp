@@ -210,7 +210,8 @@ void loop()
       current_task = &epreuve_rose_TASK;
     }
     else if (couleur == ORANGE)
-    { 
+    {
+      Mycolored_leds[orange].on();
       epreuve_orange_TASK.state = SETUP;
       current_task = &epreuve_orange_TASK;
     }
