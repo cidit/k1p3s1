@@ -1,7 +1,8 @@
 //fonctions.cpp
 #include "fonctions.h"
 #include <LibRobus.h>
-
+#include <robots\calib_3b_wheels.h>
+#include <utils\calib.h>
 
 void forwardInMeters(float meters) {
   float offset = 0.0;
@@ -291,8 +292,6 @@ void check_colored_leds(ColoredLED colored_leds[])
 }
 }
 
-bool robot_start = false;
-bool robot_wake_up = true;
 
 void beep(int times) 
 {

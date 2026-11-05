@@ -20,17 +20,15 @@
 #include "tasks/detect_color.h"
 #include "tasks/epreuve_rose.h"
 #include "tasks/epreuve_orange.h"
-#include "tasks/epreuve_jaune.h"
+#include "tasks/epreuve_jaune.h" // INUTILE
 #include "tasks/epreuve_verte.h"
 #include "tasks/epreuve_bleue.h"
 
+#include "epreuve_jaune.h"
+
 #define ROBOT_3A
 
-#ifdef ROBOT_3A
-#include "robots/calib_3a_wheels.h"
-#else
-#include "robots/calib_3b_wheels.h"
-#endif
+#include "robots/calib_wheels.h"
 
 TimerContext graph_timer = make_timer(us_from_s(T_from_Hz(2)), 0);
 TimerContext encoder_sampling = make_timer(us_from_s(T_from_Hz(200)), 0);
@@ -150,8 +148,8 @@ void loop()
   auto distribution_ = distribution(follower_vals, follower_pins_len);
 
   auto base_speed = 0.15;
-  motor_set_speed(drive.left, -(base_speed - distribution_ / 4));
-  motor_set_speed(drive.right, -(base_speed + distribution_ / 4));
+  // motor_set_speed(drive.left, -(base_speed - distribution_ / 4));
+  // motor_set_speed(drive.right, -(base_speed + distribution_ / 4));
 
   /* ===== LANCEMENT DES EPREUVES ==== */
 
@@ -169,8 +167,13 @@ void loop()
     }
     else if (couleur == JAUNE)
     {
-      epreuve_jaune_TASK.state = SETUP;
-      current_task = &epreuve_jaune_TASK;
+      // epreuve_jaune_TASK.state = SETUP;
+      // current_task = &epreuve_jaune_TASK;
+      pid_disable(drive.left.speed_correction);
+      pid_disable(drive.right.speed_correction);
+      pid_disable(drive.rotation);
+      find_the_wall(-0.5, 1);
+      couleur = UNKNOWN_COLOR;
     }
     else if (couleur == VERT)
     {
@@ -184,10 +187,10 @@ void loop()
     }
   }
 
-  /* ===== PRINTIIGNT SECTION ==== */
+  /* ===== PRINTIGNT SECTION ==== */
 
   auto now = micros();
-  if (timer_ready(graph_timer, now) && true)
+  if (timer_ready(graph_timer, now) && false)
   {
     timer_reset(graph_timer, now);
 

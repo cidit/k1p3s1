@@ -8,6 +8,11 @@
 
 #define TASK_TYPE epreuve_jaune
 
+    const int pin_detect_proxim_av = 1;
+    const int cote = 2;
+    float speed = -0.5;
+
+
 TASK_CONTEXT()
 {
   //Mettre les variables qui seront réutilisées dans le main
@@ -15,10 +20,10 @@ TASK_CONTEXT()
 
 TASK_INIT()
 {
+  pinMode(pin_detect_proxim_av, INPUT);
+  pinMode(cote, INPUT);
   return (epreuve_jaune_context){
-    //Mettre les variables qui seront déclarées plus bas
-    //format: .nom_variable = nom variable,
-    };
+};
 }
 
 TASK_SETUP()
@@ -29,8 +34,7 @@ TASK_SETUP()
 
 TASK_LOOP()
 {
-  //loop de la tâche
-  return false;
+  return find_the_wall(speed, pin_detect_proxim_av);
 }
 
 TASK_CLEANUP()

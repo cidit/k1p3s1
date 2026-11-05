@@ -70,12 +70,12 @@ TASK_LOOP()
 
     tcs.setInterrupt(true); // turn off LED
 
-    /*Serial.print("R:\t");
+    Serial.print("R:\t");
     Serial.print(red);
     Serial.print("\tG:\t");
     Serial.print(green);
     Serial.print("\tB:\t");
-    Serial.println(blue);*/
+    Serial.println(blue);
 
     if ((red - 410) < range and (green - 305) < range and (blue - 245) < range){
       ctx.couleur = ROSE;
@@ -104,7 +104,7 @@ TASK_LOOP()
 TASK_CLEANUP()
 {
   // nothing to do
-  return false;
+  return true;
 }
 
 #undef TASK_TYPE
