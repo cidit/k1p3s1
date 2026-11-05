@@ -7,6 +7,7 @@
 #include "utils/pid.h"
 #include "utils/ema.h"
 #include "utils/task.h"
+#include "utils/colored_leds.h"
 
 #include "hardware.h"
 #include "odometry2wheels.h"
@@ -20,15 +21,10 @@
 #include "tasks/detect_color.h"
 #include "tasks/epreuve_rose.h"
 #include "tasks/epreuve_orange.h"
-#include "tasks/epreuve_jaune.h" // INUTILE
+#include "tasks/epreuve_jaune.h"
 #include "tasks/epreuve_verte.h"
 #include "tasks/epreuve_bleue.h"
-#include "tasks/check_tasks.h"
-#include <MegaServo/MegaServo.h>
-
 #include "epreuve_jaune.h"
-
-#define ROBOT_3A
 
 #include "robots/calib_wheels.h"
 
@@ -45,6 +41,16 @@ EmaContext left_speed_ema = make_EMA(encoder_sampling.period, .1);
 
 OdometryContext odometry = make_odometry();
 
+ColoredLED Mycolored_leds[nb_leds] = {
+    ColoredLED(38),
+    ColoredLED(39),
+    ColoredLED(40),
+    ColoredLED(41),
+    ColoredLED(42)
+};
+
+bool robot_depart = false;
+
 // bool to complete tasks
 bool blue_done = false;
 bool pink_done = false;
@@ -52,6 +58,9 @@ bool yellow_done = false;
 bool green_done = false;
 bool orange_done = false;
 
+bool robot_reveil = false;
+
+bool we_re_at_hole = false;
 
 #ifdef ROBOT_3A
 PidContext right_pid = make_pid(PidK{.p = 0.2, .i = 0, .d = 0}, D_ON_PV);
@@ -96,18 +105,17 @@ MAKE_TASK(TRACK_SPEED, encoder_sampling, right_enco, left_enco, right_speed_ema,
 MAKE_TASK(UPDATE_DRIVE, pid_cycle, drive)
 MAKE_TASK(TRACK_LINE, line_follower_timer, follower_pins, mappings, follower_emas)
 MAKE_TASK(detect_color, couleur, red, green, blue)
-MAKE_TASK(epreuve_rose) // TODO: MISSING DONE PARAMS
-MAKE_TASK(epreuve_orange) // TODO: MISSING DONE PARAMS
+MAKE_TASK(epreuve_rose, pink_done)     // TODO: MISSING DONE PARAMS
+MAKE_TASK(epreuve_orange, orange_done) // TODO: MISSING DONE PARAMS
 MAKE_TASK(epreuve_jaune, yellow_done)
 MAKE_TASK(epreuve_verte, green_done)
-MAKE_TASK(epreuve_bleue, blue_done)
+MAKE_TASK(epreuve_bleue, blue_done, robot_reveil)
 MAKE_TASK(CHECK_COLORS_DONE, blue_done, pink_done, yellow_done, green_done, orange_done)
 
 Task *background_tasks[] = {
     &TRACK_SPEED_TASK,
     &UPDATE_DRIVE_TASK,
     &TRACK_LINE_TASK,
-    &CHECK_COLORS_DONE_TASK,
     &detect_color_TASK};
 
 Task *current_task = &IDLE_TASK;
@@ -125,19 +133,29 @@ void setup()
   {
     follower_emas[i] = make_EMA(s_from_us(line_follower_timer.period), 0.05);
   }
+
+  start_colored_leds(Mycolored_leds);
+
   // begin background tasks;
   for (auto task : background_tasks)
   {
     task->state = TaskState::SETUP;
   }
   
-  servo_up.attach(2);
-  servo_pince.attach(3);
-  delay(2000);
 }
 
 void loop()
 {
+  while (!robot_depart)
+  {
+    if (IR_start_check)
+    {
+      beep(2);
+      robot_depart = true;
+    }
+  }
+  check_colored_leds(Mycolored_leds);
+
   /* ===== TASK RUNNING ===== */
 
   for (auto task : background_tasks)
@@ -163,51 +181,64 @@ void loop()
   auto intensity_ = intensity(follower_vals, follower_pins_len);
   auto distribution_ = distribution(follower_vals, follower_pins_len);
 
+  if (intensity_ > 2.5)
+  {
+    we_re_at_hole = !we_re_at_hole;
+  }
+
   auto base_speed = 0.15;
-  // motor_set_speed(drive.left, -(base_speed - distribution_ / 4));
-  // motor_set_speed(drive.right, -(base_speed + distribution_ / 4));
+  if (we_re_at_hole)
+  {
+    motor_set_speed(drive.left, base_speed);
+    motor_set_speed(drive.right, base_speed);
+  }
+  else
+  {
+    motor_set_speed(drive.left, -(base_speed - distribution_ / 4));
+    motor_set_speed(drive.right, -(base_speed + distribution_ / 4));
+  }
 
   /* ===== LANCEMENT DES EPREUVES ==== */
 
+  
   if (current_task->state == DONE)
   {
     if (couleur == ROSE)
     {
+      Mycolored_leds[rouge].on();
       epreuve_rose_TASK.state = SETUP;
       current_task = &epreuve_rose_TASK;
     }
     else if (couleur == ORANGE)
-    { 
+    {
+      Mycolored_leds[orange].on();
       epreuve_orange_TASK.state = SETUP;
       current_task = &epreuve_orange_TASK;
     }
     else if (couleur == JAUNE)
     {
-      // epreuve_jaune_TASK.state = SETUP;
-      // current_task = &epreuve_jaune_TASK;
-      pid_disable(drive.left.speed_correction);
-      pid_disable(drive.right.speed_correction);
-      pid_disable(drive.rotation);
-      find_the_wall(-0.5, 1);
-      yellow_done = true;
-      couleur = UNKNOWN_COLOR;
+      Mycolored_leds[jaune].on();
+      epreuve_jaune_TASK.state = SETUP;
+      current_task = &epreuve_jaune_TASK;
     }
     else if (couleur == VERT)
     {
+      Mycolored_leds[vert].on();
       epreuve_verte_TASK.state = SETUP;
       current_task = &epreuve_verte_TASK;
     }
     else if (couleur == BLEU)
     {
+      Mycolored_leds[bleu].on();
       epreuve_bleue_TASK.state = SETUP;
       current_task = &epreuve_bleue_TASK;
     }
   }
 
-  /* ===== PRINTIGNT SECTION ==== */
+  /* ===== PRINTIIGNT SECTION ==== */
 
   auto now = micros();
-  if (timer_ready(graph_timer, now) && false)
+  if (timer_ready(graph_timer, now) && true)
   {
     timer_reset(graph_timer, now);
 
