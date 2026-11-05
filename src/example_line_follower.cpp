@@ -13,11 +13,7 @@
 
 #define ROBOT_3A
 
-#ifdef ROBOT_3A
-#include "robots/calib_3a_wheels.h"
-#else
-#include "robots/calib_3b_wheels.h"
-#endif
+#include "robots/calib_wheels.h"
 
 TimerContext graph_timer = make_timer(us_from_s(T_from_Hz(20)), 0);
 TimerContext encoder_sampling = make_timer(us_from_s(T_from_Hz(200)), 0);

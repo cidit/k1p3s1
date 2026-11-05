@@ -16,16 +16,16 @@ TASK_CONTEXT()
 {
   //Mettre les variables qui seront réutilisées dans le main
   TimerContext timer;
-  bool &orange;
+  bool &orange_done;
 };
 
-TASK_INIT(bool &orange)
+TASK_INIT(bool &orange_done)
 {
   return (epreuve_orange_context){
     //Mettre les variables qui seront déclarées plus bas
     //format: .nom_variable = nom variable,
     .timer = make_timer(us_from_s(5), 0),
-    .orange = orange
+    .orange_done = orange_done
     };
 }
 
@@ -53,7 +53,7 @@ TASK_CLEANUP()
 {
   // nothing to do
   Serial.print("Épreuve orange finie");
-  orange_done = true;
+  ctx.orange_done = true;
   // GRAPH(2)
   return true;
 }

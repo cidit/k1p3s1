@@ -1,6 +1,7 @@
 #pragma once
 
 #include "utils/task.h"
+#include "fonctions.h"
 
 #define TASK_TYPE CHECK_COLORS_DONE
 
