@@ -8,28 +8,26 @@
 
 #define TASK_TYPE epreuve_jaune
 
-    const int pin_detect_proxim_av = 1;
-    const int cote = 2;
-    float speed = -0.5;
-
+const int pin_detect_proxim_av = 1;
+const int cote = 2;
+float speed = -0.5;
 
 TASK_CONTEXT()
 {
-  bool &yellow;
+  bool &yellow_done;
 };
 
-TASK_INIT(bool &yellow)
+TASK_INIT(bool &yellow_done)
 {
   pinMode(pin_detect_proxim_av, INPUT);
   pinMode(cote, INPUT);
-  return (epreuve_jaune_context){
-    .yellow = yellow
-};
+  return (TASK_ctx){
+      .yellow_done = yellow_done};
 }
 
 TASK_SETUP()
 {
-  //setup
+  // setup
   return true;
 }
 
@@ -40,7 +38,7 @@ TASK_LOOP()
 
 TASK_CLEANUP()
 {
-  yellow_done = true;
+  ctx.yellow_done = true;
   return false;
 }
 
