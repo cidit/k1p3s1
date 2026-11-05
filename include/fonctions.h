@@ -1,10 +1,9 @@
 #pragma once
-#ifndef FONCTIONS_H
-#define FONCTIONS_H
 
 #include <Arduino.h>
 #include <LibRobus.h>
 #include <hardware.h>
+#include <MegaServo/MegaServo.h>
 
 const int pin_vert = 48;
 const int pin_rouge = 49;
@@ -16,8 +15,8 @@ const float circle = dist_roue*3.1416; // m
 const float ticks_per_turn = 3200.0; //ticks
 const int ir_receive_in = 37;
 
-bool robot_start = false;
-bool robot_wake_up = true;
+extern bool _robot_start;
+extern bool _robot_wake_up;
 
 void forwardInMeters(float meters);
 
@@ -67,4 +66,16 @@ bool can_robot_move();
 bool find_the_wall(float speed,int pin);
 
 
-#endif // FONCTIONS_H
+
+
+extern MegaServo servo_up;
+extern MegaServo servo_pince;
+
+
+void raph_rotationPID(float degrees);
+void raph_forwardInMetersTrapeze(float meters, int8_t back);
+void pincer();
+void lacher();
+void verre();
+void quille();
+float ticks_to_deg(int ticks);
