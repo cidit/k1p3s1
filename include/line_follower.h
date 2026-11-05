@@ -7,7 +7,7 @@ struct MappingParameters
     int16_t min, max;
 };
 
-void pipe_offset(MappingParameters mapping_parameters[], uint16_t in_raw[], int16_t out_offset[], size_t len)
+void pipe_offset(MappingParameters mapping_parameters[], int in_raw[], int out_offset[], size_t len)
 {
     for (size_t i = 0; i < len; i++)
     {
@@ -15,26 +15,28 @@ void pipe_offset(MappingParameters mapping_parameters[], uint16_t in_raw[], int1
     }
 }
 
-void pipe_scaled(MappingParameters mapping_parameters[], int16_t in_offset[], float out_scaled[], size_t len)
+void pipe_scaled(MappingParameters mapping_parameters[], int in_offset[], float out_scaled[], size_t len)
 {
     for (size_t i = 0; i < len; i++)
     {
-        out_scaled[i] = in_offset[i] - mapping_parameters[i].min;
+        float scale = mapping_parameters->max - mapping_parameters->min;
+        out_scaled[i] = in_offset[i]/scale;
     }
 }
 
-void pipe_clamped(MappingParameters mapping_parameters[], float in_scaled[], float out_clamped[], size_t len)
+void pipe_clamped(float in_scaled[], float out_clamped[], size_t len)
 {
     for (size_t i = 0; i < len; i++)
     {
-        out_clamped[i] = in_scaled[i] - mapping_parameters[i].min;
+        out_clamped[i] = constrain(in_scaled[i], 0, 1);
     }
 }
+
 
 float intensity(float values[], size_t len_values)
 {
     auto sum = 0.0;
-    for (size_t i = 0; i < len_values - 1; i++)
+    for (size_t i = 0; i < len_values; i++)
     {
         sum += values[i];
     }
@@ -51,7 +53,7 @@ float distribution(float values[], size_t len_values)
         return 0; // ERR CASE, expect a middle value
     }
 
-    auto middle_idx = len_values / 2;
+    float middle_idx = len_values / 2;
 
     auto sum = 0.0;
     for (size_t i = 0; i < len_values; i++)
