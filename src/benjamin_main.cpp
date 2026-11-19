@@ -1,94 +1,37 @@
 #include <Arduino.h>
-#include <LibRobus.h>
 
-enum {rouge, orange, jaune, vert, bleu, nb_leds};
+const uint8_t BUTTON_PIN = 13;
+const uint32_t TIME_WINDOW = 1000;
+const uint32_t TIME_DEBOUNCE = 30;
 
-struct ColoredLED
-{
-    int pin;
-    unsigned long time_set;
-    bool is_on;
-    
-    ColoredLED(int led_pin)
-    {
-        pin = led_pin;
-        time_set = 0;
-        is_on = false;
+uint8_t code_read(uint8_t pin, uint32_t start) {
+    uint8_t code = 1;
+    bool last = LOW;
+    uint32_t last_change = millis();
+
+    while (millis() - start < TIME_WINDOW) {
+        bool state = digitalRead(pin);
+
+        if (state != last and millis() - last_change > TIME_DEBOUNCE) {
+            last = state;
+            last_change = millis();
+            if (state == LOW) {code++;}
+        }
     }
-
-    void begin()
-    {
-        pinMode(pin, OUTPUT);
-    }
-
-    void on()
-    {
-        digitalWrite(pin, HIGH);
-        time_set = millis();
-        is_on = true;
-    }
-
-    void off()
-    {
-        digitalWrite(pin, LOW);
-        is_on = false;
-    }
-
-    bool is_time()
-    {
-        return is_on and (millis() - time_set > 10 * 1000);
-    }
-};
-
-void start_colored_leds(ColoredLED colored_leds[])
-{
-        for (int i = 0; i < nb_leds; i++)
-    {
-        colored_leds[i].begin();
-        colored_leds[i].on();
-        delay(500);
-        colored_leds[i].off();
-    }
+    return code;
 }
 
-void check_colored_leds(ColoredLED colored_leds[])
-{
-    for (int i = 0; i < nb_leds; i++)
-{
-    if (colored_leds[i].is_time())
-    {
-        colored_leds[i].off();
-    }
-}
-}
-
-
-ColoredLED colored_led[5] = {
-    ColoredLED(38),
-    ColoredLED(39),
-    ColoredLED(40),
-    ColoredLED(41),
-    ColoredLED(42)
-};
-
-void setup()
-{
+void setup() {
     Serial.begin(115200);
-    BoardInit();
-    start_colored_leds(colored_led);
+    pinMode(BUTTON_PIN, INPUT_PULLUP);
+    Serial.println("ready");
 }
 
-void loop()
-{
-check_colored_leds(colored_led);
-Serial.println(millis());
-}  
-
-/* #include <Arduino.h>
-#include <LibRobus.h>
-#include "fonctions.h"
-
-void setup()
-{
-    BoardInit();
-} */
+void loop() {
+    if (digitalRead(BUTTON_PIN) == LOW) {
+        delay(TIME_DEBOUNCE);
+        uint32_t start = millis();
+        uint8_t code = code_read(BUTTON_PIN, start);
+        Serial.println("Code received : " + String(code));
+    }
+}
