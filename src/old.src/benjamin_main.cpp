@@ -10,7 +10,7 @@ constexpr float WHEEL_TICK_PER_TURN = 3200.0;
 constexpr float WHEEL_DISTANCE = WHEEL_DISTANCE_OUTER - WHEEL_THICKNESS;
 const float circumference = 0.24; // m
 const float dist_roue = (WHEEL_DISTANCE_OUTER - WHEEL_THICKNESS) / 1000.0; // m
-const float circle = dist_roue*3.1416; // m
+const float circle = dist_roue * 3.1416; // m
 const float ticks_per_turn = 3200.0; //ticks
 
 float last_pos = 0.0;
