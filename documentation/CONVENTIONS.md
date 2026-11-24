@@ -67,7 +67,6 @@ namespace mon_autre_feature {
 }
 ```
 
-
 Dans `src/main.cpp`
 
 ```cpp
