@@ -1,7 +1,9 @@
 #pragma once
 
 constexpr float WHEEL_DIAMETER = 76.5; // mm
+constexpr float WHEEL_CIRCUMFERENCE = WHEEL_DIAMETER * PI; // mm
 constexpr float WHEEL_DISTANCE_OUTER = 190.0; // mm
 constexpr float WHEEL_THICKNESS = 6.65; // mm
 constexpr float WHEEL_TICK_PER_TURN = 3200.0;
+constexpr float WHEEL_DISTANCE = WHEEL_DISTANCE_OUTER - WHEEL_THICKNESS;
 constexpr float WHEEL_DISTANCE = WHEEL_DISTANCE_OUTER - WHEEL_THICKNESS;
