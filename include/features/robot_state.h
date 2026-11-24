@@ -10,6 +10,10 @@ namespace robot_state {
 
     RobotState current_state = VEILLE;
 
+    void start() {
+        current_state = EN_JEU;
+    }
+
     void begin() {
         
     }
