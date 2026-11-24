@@ -6,6 +6,10 @@ Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS3472
 
 namespace detect_ball
 {
+    int _time_max = 5000; //(Temps max entre les balles)
+    int _threshold = 500; //(valeur exp/rimentale de diff/rence du c quand on voit la balle)
+    int _time_last_ball = 0;
+
     void begin()
     {
         Serial.println("Color View Test!");
@@ -17,26 +21,40 @@ namespace detect_ball
         {
             Serial.println("No TCS34725 found ... check your connections");
             while (1)
-            ; // halt!
+                ; // halt!
         }
     }
 
     void update()
     {
-        uint16_t clear, red, green, blue;
+        uint16_t _clear, _red, _green, _blue;
         tcs.setInterrupt(false); // turn on LED
 
-        tcs.getRawData(&red, &green, &blue, &clear);
+        tcs.getRawData(&_red, &_green, &_blue, &_clear);
 
         tcs.setInterrupt(true); // turn off LED
 
         Serial.print("R:\t");
-        Serial.print(red);
+        Serial.print(_red);
         Serial.print("\tG:\t");
-        Serial.print(green);
+        Serial.print(_green);
         Serial.print("\tB:\t");
-        Serial.println(blue);
+        Serial.println(_blue);
         Serial.print("\tC:\t");
-        Serial.println(clear);
+        Serial.println(_clear);
+
+        if (_clear > _threshold)
+        {
+            // lancer une balle et attendre un peu
+            int _time_last_ball = millis();
+        }
+        else
+        {
+            if ((millis() - _time_last_ball) > _time_max)
+            {
+                // Partie stop
+                Serial.print('Partie terminée');
+            }
+        }
     }
 }
