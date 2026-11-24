@@ -8,7 +8,7 @@ namespace detect_ball
 {
     int _time_max = 5000; //(Temps max entre les balles)
     int _threshold = 500; //(valeur exp/rimentale de diff/rence du c quand on voit la balle)
-    int _time_last_ball = 0;
+    int _time_last_ball = 0 ;
 
     void begin()
     {
@@ -45,15 +45,16 @@ namespace detect_ball
 
         if (_clear > _threshold)
         {
-            // lancer une balle et attendre un peu
-            int _time_last_ball = millis();
+            _time_last_ball = millis();
         }
         else
         {
             if ((millis() - _time_last_ball) > _time_max)
             {
                 // Partie stop
-                Serial.print('Partie terminée');
+                Serial.println("Partie terminée");
+                Serial.println(_time_last_ball);
+                Serial.println(millis());
             }
         }
     }
