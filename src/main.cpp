@@ -1,26 +1,39 @@
 #include <Arduino.h>
 #include <LibRobus.h>
-#include <features/EXEMPLE_SPEED_FEATURE.h>
+// #include <features/EXEMPLE_SPEED_FEATURE.h>
 #include <features/robot_state.h>
-#include <features/button_code.h>
+// #include <features/button_code.h>
+#include <features/turret_aiming.h>
 
-void setup() {
-  //BoardInit();
+void setup()
+{
+  BoardInit();
   Serial.begin(115200);
-  //my_example_speed_feature::begin();
+  // my_example_speed_feature::begin();
 
+  // robot_state::begin();
+  turret_aiming::begin();
 
-  //robot_state::begin();
-  button_code::begin();
+  // turret_aiming::rotate_to(-120);
 }
 
-void loop() {
-  //my_example_speed_feature::update();
+auto angle_sum = 0;
 
-  //robot_state::update();
-  button_code::update();
-  if (button_code::code == 1) {
-    robot_state::update();
+void loop()
+{
+  turret_aiming::update();
+  // if (turret_aiming::_state == turret_aiming::DONE) {
+  //   //tire
+  //   Serial.println("Start turning");
+  //   turret_aiming::random_turret_turn(120.0);
+  // }
+
+  
+
+  if (millis() % 1000 == 0 && turret_aiming::_state == turret_aiming::DONE)
+  {
+    // angle_sum -= 120;
+    Serial.println("whack");
+    turret_aiming::random_turret_turn(120.0);
   }
 }
-

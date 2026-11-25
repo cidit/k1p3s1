@@ -35,7 +35,7 @@ void BoardInit(){
   //Serial.println("3: Robus ok"); Serial.flush();
   // init telecommande
   __irrecv__.enableIRIn(); // Start the receiver
-  //  Serial.println("4: IR ok"); Serial.flush();
+  Serial.println("Board init ok"); Serial.flush();
 };
 
 void AudioInit(){
