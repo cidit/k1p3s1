@@ -6,7 +6,7 @@ Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS3472
 
 namespace detect_ball
 {
-    int _threshold = 500; //Seuil max de valeur C pour déterminer si une balle est détectée
+    int _threshold = 500; // Seuil max de valeur C pour déterminer si une balle est détectée
     uint32_t _time_last_ball = 0;
 
     void begin()
@@ -49,7 +49,7 @@ namespace detect_ball
         if (_clear > _threshold)
         {
             _time_last_ball = millis();
-            //Serial.println("Ball detected");
+            // Serial.println("Ball detected");
         }
     }
 }

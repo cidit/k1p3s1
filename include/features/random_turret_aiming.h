@@ -1,11 +1,12 @@
 #pragma once
+
 #include <Arduino.h>
 #include <LibRobus.h>
 #include <stdlib.h>
 #include <common/hardware.h>
 #include <time.h>
 
-namespace turret_aiming
+namespace random_turret_aiming
 {
   enum State
   {
@@ -23,12 +24,11 @@ namespace turret_aiming
   uint32_t _timer_last = 0, _timer_delay = 10; // millis
   State _state = DONE;
 
-  float _target = 0, accumulated_error_0 = 0, accumulated_error_1 = 0, previous_error_0 = 0, previous_error_1= 0;
+  float _target = 0, accumulated_error_0 = 0, accumulated_error_1 = 0, previous_error_0 = 0, previous_error_1 = 0;
   int32_t _enco_offset_0 = 0, _enco_offset_1 = 0;
 
   float _last_pos = 0.0;
-   #define PRINT(v) Serial.println(String(#v) + ": " + String(v));
-
+#define PRINT(v) Serial.println(String(#v) + ": " + String(v));
 
   void rotate_to(float const_degrees)
   {
@@ -36,13 +36,11 @@ namespace turret_aiming
     _enco_offset_1 = ENCODER_Read(1);
     float offset = 5.0 * (const_degrees / abs(const_degrees)); // 3b = 5.0 3a = 4.3
     _target = ((const_degrees + offset) / 360.0) * circle * (WHEEL_TICK_PER_TURN / circumference);
-    accumulated_error_0 = 0; 
+    accumulated_error_0 = 0;
     accumulated_error_1 = 0;
     previous_error_0 = _target;
     previous_error_1 = _target;
     _state = TURNING;
-
-    
 
     // PRINT(offset)
     // PRINT(_target)
@@ -55,8 +53,10 @@ namespace turret_aiming
   {
     auto distance_0 = abs(_target - (ENCODER_Read(0) - _enco_offset_0));
     auto distance_1 = abs(_target + (ENCODER_Read(1) - _enco_offset_1));
-    PRINT(distance_0)PRINT(distance_1)
-    return distance_0 < 35 && distance_1 < 35;
+    PRINT(distance_0)
+    PRINT(distance_1)
+            return distance_0 < 35 &&
+        distance_1 < 35;
   }
 
   void _update_pids_and_motors()
@@ -80,11 +80,9 @@ namespace turret_aiming
     else if (speed_1 < -0.3)
       speed_1 = -0.3;
 
-   
     // PRINT(speed_0)
     // PRINT(accumulated_error_0)
     // PRINT(error_0)
-
 
     MOTOR_SetSpeed(0, speed_0);
     MOTOR_SetSpeed(1, speed_1);
@@ -101,14 +99,13 @@ namespace turret_aiming
   float _random_float_generator()
   {
     float n = (rand() % 201 - 100) / 100.0;
-    while (_nearly_equal(n, 1.0) or _nearly_equal(n, -1.0)) {
+    while (_nearly_equal(n, 1.0) or _nearly_equal(n, -1.0))
+    {
       n = (rand() % 201 - 100) / 100.0;
     }
 
-
     return n;
   }
-
 
   float _boundary_set(float last_pos, float increment)
   {
@@ -129,6 +126,7 @@ namespace turret_aiming
   void begin()
   {
     // nothing to do here!
+    Serial.println("FEATURE READY : RANDOM_TURRET_AIMING");
   }
 
   void update()
@@ -140,7 +138,7 @@ namespace turret_aiming
 
     if (target_rotation_reached())
     {
-      Serial.println("WE DONE YET?");
+      // Serial.println("WE DONE YET?");
       _state = DONE;
       MOTOR_SetSpeed(0, 0);
       MOTOR_SetSpeed(1, 0);
@@ -158,7 +156,7 @@ namespace turret_aiming
 }
 
 //
-// ----------------- IMPLÉMENTATION DE RÉFÉRENCE par Raph -----------------------------
+// ----------------- IMPLÉMENTATION DE RÉFÉRENCE par Raph et Jacob -----------------------------
 //
 // void _rotationPID(float degrees)
 // {
