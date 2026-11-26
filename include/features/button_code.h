@@ -2,6 +2,7 @@
 #include <Arduino.h>
 #include <features/robot_state.h>
 #include <Bouton.h>
+#include <features/turret_aiming.h>
 
 namespace button_code
 {
@@ -12,96 +13,88 @@ namespace button_code
         DONE,
     };
 
-    const uint8_t _BUTTON_PIN = 13;
-    const uint32_t _TIME_INPUT = 1000;
-    const uint32_t _TIME_DEBOUNCE = 30;
+    const uint32_t _TIME_FOR_INPUT = 1000;
+    const uint32_t _TIME_FOR_DEBOUNCE = 30;
+
+    uint8_t _BUTTON_PIN;
+
     State _state = DONE;
 
-    bool _is_first_input = true;
-    bool _is_still_pressed = false;
-    uint32_t _time_at_first_input;
-    uint32_t _time_at_first_press;
-    uint32_t _time_at_input;
     uint8_t code = 0;
+
+    bool _is_initializing_input = true;
+    uint32_t _time_at_this_press = 0;
+
+    bool _is_debouncing = false;
+    uint32_t _time_at_debouncing = 0;
+
+    bool _is_rising_edge = true;
 
     bool button_clicked()
     {
         return digitalRead(_BUTTON_PIN) == LOW;
     }
 
-    void add_press() {
-        code++;
-    }
-/*     uint8_t code_reading(uint8_t pin, uint32_t start)
+    void begin(uint8_t pin)
     {
-        bool is_first_press = true;
-        uint32_t code = 0;
-        uint32_t time_at_first_press;
-
-        if (_state == DONE)
-        {
-            code = 1;
-            _state = READING;
-            Serial.println("Reading : " + String(_state));
-        }
-
-        if (button_clicked() and is_first_press)
-        {
-            time_at_first_press = millis();
-            is_first_press = false;
-        }
-
-        if (!is_first_press and millis() - time_at_first_press)
-    } */
-
-    void begin()
-    {
+        _BUTTON_PIN = pin;
         pinMode(_BUTTON_PIN, INPUT_PULLUP);
         Serial.println("Ready to input button codes : " + String(_state));
     }
 
+    bool started_debounce = false, wait_for_falling_edge = false;
+
     void update()
     {
-        if (button_clicked() and _is_first_input)
+        if (button_clicked())
         {
-            _time_at_first_input = millis();
-            _is_first_input = false;
-            _is_still_pressed = true;
-        }
-
-        if (!_is_first_input and millis() - _time_at_first_input < _TIME_DEBOUNCE)
-        {
-            return;
-        }
-        else
-        {
-            if (button_clicked())
+            if (!_is_debouncing)
             {
-                
-                if (_state == DONE) {
-                    _state = READING;
-                    _time_at_first_press = millis();
-                    code = 1; 
-                } else {
-                    if (!_is_still_pressed) {add_press();}
-                }
-                _is_still_pressed = false;
-                
-            } else {
+                _is_debouncing = true;
+                _time_at_debouncing = millis();
             }
-            _is_first_input = true;
+
+            if (millis() - _time_at_debouncing < _TIME_FOR_DEBOUNCE)
+            {
+                //Serial.println("Still debouncing, click doesn't count");
+                return;
+            }
+            else
+            {
+                _is_debouncing = false;
+                //Serial.println("Debouncing has stopped");
+            }
+            
+            if (_is_rising_edge)
+            {
+                if (_is_initializing_input)
+                {
+                    _is_initializing_input = false;
+                    _state = READING;
+                    PRINT(_state);
+                    code = 1;
+                    Serial.println("First press entered");
+                }
+                else
+                {
+                    code += 1;
+                    Serial.println("Further press received");
+                }
+                _is_rising_edge = false;
+                _time_at_this_press = millis();
+            }
         }
-        
-        if (_state == READING and millis() - _time_at_first_press > _TIME_INPUT) {
+        else if (!_is_rising_edge and millis() - _time_at_debouncing < _TIME_FOR_DEBOUNCE)
+        {
+            _is_rising_edge = true;
+        }
+
+        if (!_is_initializing_input and millis() - _time_at_this_press > _TIME_FOR_INPUT)
+        {
+            Serial.println("Code received : " + String(code));
+            _is_initializing_input = true;
             _state = DONE;
-            Serial.println(String(code));
+            PRINT(_state);
         }
-
-
-        /*                 uint32_t _time_at_first_input = millis();
-                        code = button_input(_BUTTON_PIN, start);
-                        Serial.println("Code received : " + String(code));} */
     }
-
 }
-// async : make sure that only one button input can be read per update, as to remove the use of delays
