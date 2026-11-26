@@ -97,6 +97,11 @@ namespace turret_aiming
   float _random_float_generator()
   {
     float n = (rand() % 201 - 100) / 100.0;
+    while (_nearly_equal(n, 1.0) or _nearly_equal(n, -1.0)) {
+      n = (rand() % 201 - 100) / 100.0;
+    }
+
+
     return n;
   }
 

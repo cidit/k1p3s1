@@ -27,7 +27,7 @@ General librairies for Robus robot
 #define REAR 3
 
 #define MAX_N_TIMER 10 // Nombre maximum de Chronometres
-#define BAUD_RATE_SERIAL0 9600
+#define BAUD_RATE_SERIAL0 115200 // was previously 9600, changed after problems arose from a rate that's too slow
 #define BAUD_RATE_BLUETOOTH 115200
 #define SerialBT Serial2
 #define SerialAudio Serial3
