@@ -93,6 +93,10 @@ namespace turret_aiming
     previous_error_0 = error_0;
     previous_error_1 = error_1;
   }
+  bool _nearly_equal(float a, float b, float tolerance = 0.0001)
+  {
+    return fabs(a - b) < tolerance;
+  }
 
   float _random_float_generator()
   {
@@ -105,10 +109,6 @@ namespace turret_aiming
     return n;
   }
 
-  bool _nearly_equal(float a, float b, float tolerance = 0.0001)
-  {
-    return fabs(a - b) < tolerance;
-  }
 
   float _boundary_set(float last_pos, float increment)
   {

@@ -46,6 +46,8 @@ namespace detect_ball
         if (_clear > _threshold)
         {
             _time_last_ball = millis();
+            Serial.println("Ball detected");
+
         }
         else
         {
