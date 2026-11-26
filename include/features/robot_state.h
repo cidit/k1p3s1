@@ -1,5 +1,6 @@
 #pragma once
 #include <Arduino.h>
+#include <features/detect_ball.h>
 
 namespace robot_state {
     
@@ -11,10 +12,12 @@ namespace robot_state {
 
     RobotState current_state = VEILLE;
     uint32_t game_start_time = 0;
+    uint32_t score = 0;
 
     void game_start() {
         current_state = EN_JEU;
         game_start_time = millis();
+        score = 0;
     }
 
     uint32_t time_elapsed(){
@@ -28,6 +31,10 @@ namespace robot_state {
 
     void game_stop() {
         current_state = FIN_JEU;
+        score = detect_ball::_time_last_ball/1000;
+        Serial.println("Partie terminée");
+        Serial.println("Pointage:\t");
+        Serial.print(score);
     }
 
 
