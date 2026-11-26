@@ -6,8 +6,8 @@ Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS3472
 
 namespace detect_ball
 {
-    int _time_max = 5000; //(Temps max entre les balles)
-    int _threshold = 500; //(valeur exp/rimentale de diff/rence du c quand on voit la balle)
+    int _time_max = 5000; //Temps max entre les balles
+    int _threshold = 500; //Seuil max de C pour déterminer si une balle est détectée
     int _time_last_ball = 0 ;
 
     void begin()
@@ -34,6 +34,8 @@ namespace detect_ball
 
         tcs.setInterrupt(true); // turn off LED
 
+        // Affichage des valeurs RGBC
+        /*
         Serial.print("R:\t");
         Serial.print(_red);
         Serial.print("\tG:\t");
@@ -42,21 +44,26 @@ namespace detect_ball
         Serial.println(_blue);
         Serial.print("\tC:\t");
         Serial.println(_clear);
+        */
 
+        // Si une balle est détectée, le chrono redémarre
         if (_clear > _threshold)
         {
             _time_last_ball = millis();
             Serial.println("Ball detected");
 
         }
+
+        // Si aucune balle n'est détectée, vérifie si le temps maximal
+        // est écoulé.
         else
         {
             if ((millis() - _time_last_ball) > _time_max)
             {
-                // Partie stop
+                // Partie se termine si le temps est écoulé
                 Serial.println("Partie terminée");
-                Serial.println(_time_last_ball);
-                Serial.println(millis());
+                //Serial.println(_time_last_ball); // Print pour débuggage
+                //Serial.println(millis()); // Print pour débuggage
             }
         }
     }
